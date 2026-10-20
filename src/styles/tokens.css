@@ -1,0 +1,39 @@
+/* UI reference: user-provided Toss Securities screenshot. */
+:root {
+    color-scheme: light;
+    --positive: #f04452;
+    --negative: #3182f6;
+    --font-ui: 'Pretendard Variable', Pretendard, sans-serif;
+    --primary: #3182f6;
+    --primary-active: #1b64da;
+    --secondary: #213183;
+    --on-primary: #ffffff;
+    --ink: #191f28;
+    --ink-soft: #333d4b;
+    --text-muted: #6b7684;
+    --text-faint: #8b95a1;
+    --canvas: #ffffff;
+    --canvas-soft: #f2f4f6;
+    --field: #f2f4f6;
+    --hairline-soft: #f2f4f6;
+    --hairline: #e5e8eb;
+    --accent: #0075de;
+    --accent-purple: #d6b6f6;
+    --accent-purple-deep: #391c57;
+    --accent-sky: #62aef0;
+    --accent-orange: #dd5b00;
+    --accent-teal: #2a9d99;
+    --radius-xs: 4px;
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-card: 12px;
+    --radius-xl: 16px;
+    --radius-pill: 9999px;
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 28px;
+    --space-xxl: 32px;
+    --shadow-soft: 0 1px 2px #00000003, 0 4px 18px #00000006;
+}

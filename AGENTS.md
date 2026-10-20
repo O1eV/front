@@ -4,7 +4,14 @@ This file provides guidance to AI coding agents (e.g. OpenAI Codex) when working
 
 ## Status
 
-This directory has no source code yet (as of 2026-10-19). There are no build, lint, or test commands to run. When code is added, update this file with the real commands (Spring Boot build/test, React dev server, FastAPI model server, single-test invocations).
+React + TypeScript + Vite UI foundation is implemented. Domain screens and backend/model integration will follow separately.
+
+- Install: `npm ci`
+- Development: `npm run dev`
+- Build/type check: `npm run build`
+- Lint: `npm run lint`
+- Format check: `npm run format:check`
+- No automated test runner is configured.
 
 ## Project: OvE (AI 의사결정 기반 실시간 투자 보조 서비스)
 
@@ -55,7 +62,7 @@ Upbit WebSocket / KIS API
 
 ## Other code style
 
-- FE: Prettier + ESLint, semicolons, single quotes, 4-space indent. Components in `PascalCase.jsx`, hooks in `useXxx.js`, Zustand stores named `use{Domain}Store`.
+- FE: Prettier + ESLint, semicolons, single quotes, 4-space indent. Components in `PascalCase.tsx`, hooks in `useXxx.ts`, Zustand stores named `use{Domain}Store`.
 - AI/Python: PEP 8, Black + isort + Ruff. Training code lives in `.py` files. Notebooks are for experiments only. Split train/validation/test in time order to avoid leakage.
 
 ## Git workflow
