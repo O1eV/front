@@ -1,11 +1,14 @@
-import { Link, Route, Routes, useLocation } from 'react-router-dom';
+import { Link, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { Sidebar } from './components/layout/Sidebar';
 import { PageIntro } from './components/layout/PageIntro';
 import { Footer } from './components/layout/Footer';
 import { getPageFromPath, pagePaths } from './routes/paths';
 import './styles/layout.css';
+import { useDashboard } from './hooks/useDashboard';
+import { MarketBrowsePage } from './pages/MarketBrowsePage';
 
 export default function App() {
+    const dashboard = useDashboard();
     const { pathname } = useLocation();
     const page = getPageFromPath(pathname);
 
@@ -18,7 +21,11 @@ export default function App() {
             <main id="main-content" tabIndex={-1}>
                 {page && <PageIntro page={page} />}
                 <Routes>
-                    {Object.values(pagePaths).map(path => (
+                    <Route element={<Outlet context={dashboard} />}>
+                        <Route path="/" element={<MarketBrowsePage />} />
+                        <Route path="/watchlist" element={<MarketBrowsePage favoritesOnly />} />
+                    </Route>
+                    {[pagePaths['신호 이력'], pagePaths['모의 포트폴리오']].map(path => (
                         <Route
                             key={path}
                             path={path}
