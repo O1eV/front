@@ -1,7 +1,9 @@
 import { Icon } from '../components/ui/Icon';
 import { MarketRanking } from '../components/market/MarketRanking';
 import { useDashboardContext } from '../hooks/useDashboardContext';
-import { formatNumber } from '../utils/format';
+import { ChartPanel } from '../components/market/ChartPanel';
+import { AiInsight } from '../components/market/AiInsight';
+import '../styles/analysis.css';
 import '../styles/markets.css';
 
 export function MarketBrowsePage({ favoritesOnly = false }: { favoritesOnly?: boolean }) {
@@ -35,23 +37,16 @@ export function MarketBrowsePage({ favoritesOnly = false }: { favoritesOnly?: bo
                     매수 신호만
                 </button>
             </div>
-            <section className="selected-quote" aria-label="선택 종목" aria-live="polite">
-                <div>
-                    <strong>{selectedStock.name}</strong>
-                    <small>
-                        {selectedStock.symbol} · {selectedStock.exchange}
-                    </small>
-                </div>
-                <div>
-                    <strong>{formatNumber(selectedStock.price)}원</strong>
-                    <small
-                        className={selectedStock.priceChangePercent > 0 ? 'positive' : 'negative'}
-                    >
-                        {selectedStock.priceChangePercent > 0 ? '+' : ''}
-                        {selectedStock.priceChangePercent}%
-                    </small>
-                </div>
-            </section>
+            <div className="market-analysis">
+                <ChartPanel
+                    selectedStock={selectedStock}
+                    favoriteSymbols={dashboard.favoriteSymbols}
+                    toggleFavorite={dashboard.toggleFavorite}
+                    chartPeriod={dashboard.chartPeriod}
+                    setChartPeriod={dashboard.setChartPeriod}
+                />
+                <AiInsight selectedStock={selectedStock} />
+            </div>
             <MarketRanking
                 markets={markets}
                 selectedStock={selectedStock}
