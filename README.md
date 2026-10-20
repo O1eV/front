@@ -45,3 +45,17 @@ Pretendard는 패키지에서 로컬 번들링합니다.
 정의되지 않은 경로는 404 안내와 홈 링크를 제공합니다.
 
 이 레이아웃 브랜치의 PR 기준은 `feature/ui-primitives`입니다.
+
+## 종목 데이터와 상태
+
+- `src/types/market.ts`: 종목, 차트 기간, 신호 필터 타입
+- `src/data/markets.ts`: 국내 주식 4종목의 고정 샘플 데이터
+- `src/hooks/useDashboard.ts`: 선택 종목·검색어·관심 종목·차트 기간·신호 필터 관리
+- `src/hooks/useDashboardContext.ts`: 후속 중첩 라우트에서 사용할 Outlet 상태 접근 훅
+- `src/utils/format.ts`: 한국어 로케일 숫자 표시
+
+검색은 종목명 또는 코드로 수행하며 앞뒤 공백과 영문 대소문자를 무시합니다.
+매수 신호 필터는 샘플 매수 확률이 50%를 초과한 종목만 반환합니다.
+상태는 메모리에만 보관하므로 새로고침하면 초기화됩니다.
+이번 브랜치는 데이터와 훅만 추가하며, 실제 화면 연결은 후속 작업입니다.
+PR 기준 브랜치는 `feature/ui-layout`입니다.
