@@ -30,12 +30,18 @@ Pretendard는 패키지에서 로컬 번들링합니다.
 ## 공용 UI 컴포넌트
 
 - `src/components/ui/Icon.tsx`: 이름과 크기로 사용하는 SVG 아이콘. 장식용으로 스크린리더에서 숨깁니다.
-- `src/components/ui/Toast.tsx`: 상태 메시지와 닫기 버튼. 표시 상태는 호출 화면에서 관리합니다.
-- `src/components/ui/Toast.css`: 토스트 전용 스타일. 컴포넌트에서 직접 불러옵니다.
 
 ```tsx
 <Icon name="search" size={20} />
-{message && <Toast toastMessage={message} setToastMessage={setMessage} />}
 ```
 
 이 브랜치의 PR 기준 브랜치는 `feature/ui-foundation`입니다.
+
+## 공통 레이아웃
+
+헤더의 마켓·관심 종목·신호 이력·모의투자 메뉴는 각 경로로 이동하며 활성 메뉴를 표시합니다.
+페이지 제목과 데모 상태, 푸터를 공통으로 사용합니다.
+현재 각 화면은 준비 안내만 표시하며 도메인 화면은 후속 작업입니다.
+정의되지 않은 경로는 404 안내와 홈 링크를 제공합니다.
+
+이 레이아웃 브랜치의 PR 기준은 `feature/ui-primitives`입니다.
