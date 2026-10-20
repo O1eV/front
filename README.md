@@ -26,3 +26,16 @@ npm run format:check
 - `public/favicon.svg`: 헤더·파비콘용 로고
 
 Pretendard는 패키지에서 로컬 번들링합니다.
+
+## 공용 UI 컴포넌트
+
+- `src/components/ui/Icon.tsx`: 이름과 크기로 사용하는 SVG 아이콘. 장식용으로 스크린리더에서 숨깁니다.
+- `src/components/ui/Toast.tsx`: 상태 메시지와 닫기 버튼. 표시 상태는 호출 화면에서 관리합니다.
+- `src/components/ui/Toast.css`: 토스트 전용 스타일. 컴포넌트에서 직접 불러옵니다.
+
+```tsx
+<Icon name="search" size={20} />
+{message && <Toast toastMessage={message} setToastMessage={setMessage} />}
+```
+
+이 브랜치의 PR 기준 브랜치는 `feature/ui-foundation`입니다.
