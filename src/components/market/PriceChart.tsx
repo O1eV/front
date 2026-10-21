@@ -1,37 +1,47 @@
 import { useMemo, useState } from "react";
 import type { KeyboardEvent, PointerEvent, ReactNode } from "react";
 import type { Stock, ChartPeriod } from "../../types/market";
-import { createSampleCandles, priceToY } from "../../data/candles";
+import { createSampleCandles, priceToY, type Candle } from "../../data/candles";
 import { formatNumber } from "../../utils/format";
 import { CandleTooltip } from "./CandleTooltip";
 
 type ChartMode = "candles" | "line";
 type HoveredCandle = { index: number; left: number; top: number };
+
 const TOOLTIP_WIDTH = 220;
 const TOOLTIP_HEIGHT = 262;
 const CHART_WIDTH = 720;
-const CANDLE_SPACING = 8.6;
 const FIRST_CANDLE_X = 12;
 const TOOLTIP_GAP = 14;
 const DEFAULT_CANDLE_INDEX = 39;
 const TIME_LABEL_INDICES = [0, 16, 32, 48, 64, 79];
 
-const getCandleX = (index: number) => index * CANDLE_SPACING + FIRST_CANDLE_X;
-
 interface PriceChartProps {
   chartPeriod: ChartPeriod;
   stock: Stock;
   periodControls?: ReactNode;
+  liveCandles?: Candle[];
 }
 
-export function PriceChart({ chartPeriod, stock, periodControls }: PriceChartProps) {
+export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: PriceChartProps) {
   const [hoveredCandle, setHoveredCandle] = useState<HoveredCandle | null>(null);
   const [chartMode, setChartMode] = useState<ChartMode>("candles");
 
-  const candles = useMemo(() => createSampleCandles(stock, chartPeriod), [stock, chartPeriod]);
+  const candles = useMemo(
+    () => liveCandles ?? createSampleCandles(stock, chartPeriod),
+    [stock, chartPeriod, liveCandles]
+  );
+  const spacing = 680 / Math.max(1, candles.length - 1);
+  const getCandleX = (index: number) => index * spacing + FIRST_CANDLE_X;
+  const minimum = Math.min(...candles.map(c => c.low));
+  const maximum = Math.max(...candles.map(c => c.high));
+  const padding = Math.max((maximum - minimum) * 0.1, maximum * 0.0001);
+  const bottom = minimum - padding;
+  const range = maximum - minimum + padding * 2;
 
-  const getPriceY = (price: number) => priceToY(price, stock.price);
-  const maximumVolume = Math.max(...candles.map(candle => candle.volume));
+  const getPriceY = (price: number) =>
+    liveCandles ? 210 - ((price - bottom) / range) * 180 : priceToY(price, stock.price);
+  const maximumVolume = Math.max(1, ...candles.map(candle => candle.volume));
   const linePoints = candles
     .map((candle, index) => `${getCandleX(index)},${getPriceY(candle.close)}`)
     .join(" ");
@@ -54,7 +64,7 @@ export function PriceChart({ chartPeriod, stock, periodControls }: PriceChartPro
   function handlePointerMove(event: PointerEvent<SVGSVGElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
     const svgX = ((event.clientX - bounds.left) / bounds.width) * CHART_WIDTH;
-    selectCandle(Math.round((svgX - FIRST_CANDLE_X) / CANDLE_SPACING), bounds);
+    selectCandle(Math.round((svgX - FIRST_CANDLE_X) / spacing), bounds);
   }
 
   function handleKeyDown(event: KeyboardEvent<SVGSVGElement>) {
@@ -86,14 +96,20 @@ export function PriceChart({ chartPeriod, stock, periodControls }: PriceChartPro
       </div>
       <div className="chart-y">
         {[1.02, 1.01, 1, 0.99, 0.98].map(ratio => (
-          <span key={ratio}>{formatNumber(Math.round(stock.price * ratio))}</span>
+          <span key={ratio}>
+            {formatNumber(
+              Math.round(
+                liveCandles ? bottom + ((ratio - 0.98) / 0.04) * range : stock.price * ratio
+              )
+            )}
+          </span>
         ))}
       </div>
       <div className="chart-plot" onPointerLeave={() => setHoveredCandle(null)}>
         <svg
           role="img"
           tabIndex={0}
-          aria-label={`${stock.name} ${chartPeriod} 샘플 ${chartMode === "candles" ? "캔들" : "라인"} 차트. 방향키로 가격 확인`}
+          aria-label={`${stock.name} ${chartPeriod} ${liveCandles ? "업비트" : "샘플"} ${chartMode === "candles" ? "캔들" : "라인"} 차트. 방향키로 가격 확인`}
           viewBox="0 0 720 280"
           preserveAspectRatio="none"
           onPointerMove={handlePointerMove}
@@ -171,20 +187,24 @@ export function PriceChart({ chartPeriod, stock, periodControls }: PriceChartPro
             candle={candles[hoveredCandle.index]}
             left={hoveredCandle.left}
             top={hoveredCandle.top}
+            live={!!liveCandles}
           />
         )}
       </div>
       <div className="chart-x">
-        {TIME_LABEL_INDICES.map(index => (
-          <span key={index}>
-            {new Intl.DateTimeFormat("ko-KR", {
-              timeZone: "Asia/Seoul",
-              ...(chartPeriod === "1시간" || chartPeriod === "1일"
-                ? { hour: "2-digit", minute: "2-digit", hour12: false }
-                : { month: "numeric", day: "numeric" }),
-            }).format(new Date(candles[index].timestamp))}
-          </span>
-        ))}
+        {TIME_LABEL_INDICES.map((_, labelIndex) => {
+          const index = Math.round((labelIndex / 5) * (candles.length - 1));
+          return (
+            <span key={index}>
+              {new Intl.DateTimeFormat("ko-KR", {
+                timeZone: "Asia/Seoul",
+                ...(chartPeriod === "1시간" || chartPeriod === "1일"
+                  ? { hour: "2-digit", minute: "2-digit", hour12: false }
+                  : { month: "numeric", day: "numeric" }),
+              }).format(new Date(candles[index].timestamp))}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

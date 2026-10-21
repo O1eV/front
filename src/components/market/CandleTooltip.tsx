@@ -5,6 +5,7 @@ interface CandleTooltipProps {
   candle: Candle;
   left: number;
   top: number;
+  live?: boolean;
 }
 const dateFormat = new Intl.DateTimeFormat("ko-KR", {
   timeZone: "Asia/Seoul",
@@ -20,7 +21,7 @@ const timeFormat = new Intl.DateTimeFormat("ko-KR", {
   hour12: false,
 });
 
-export function CandleTooltip({ candle, left, top }: CandleTooltipProps) {
+export function CandleTooltip({ candle, left, top, live }: CandleTooltipProps) {
   const date = new Date(candle.timestamp);
   return (
     <div role="tooltip" className="candle-tooltip" style={{ left, top }}>
@@ -28,13 +29,14 @@ export function CandleTooltip({ candle, left, top }: CandleTooltipProps) {
         {dateFormat.format(date)}
         <small>{timeFormat.format(date)}</small>
       </strong>
+
       <dl>
         {[
           { label: "시작", value: `${formatNumber(candle.open)}원` },
           { label: "마지막", value: `${formatNumber(candle.close)}원` },
           { label: "최고", value: `${formatNumber(candle.high)}원` },
           { label: "최저", value: `${formatNumber(candle.low)}원` },
-          { label: "거래량", value: `${formatNumber(candle.volume)}주` },
+          { label: "거래량", value: `${formatNumber(candle.volume)}${live ? "개" : "주"}` },
         ].map(item => (
           <div key={item.label}>
             <dt>{item.label}</dt>
@@ -57,7 +59,9 @@ export function CandleTooltip({ candle, left, top }: CandleTooltipProps) {
           </dd>
         </div>
       </dl>
-      <span className="tooltip-footnote">샘플 데이터 · 등락률은 직전 종가 대비</span>
+      <span className="tooltip-footnote">
+        {live ? "업비트 시세" : "샘플 데이터"} · 등락률은 직전 종가 대비
+      </span>
     </div>
   );
 }
