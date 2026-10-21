@@ -1,3 +1,4 @@
+import { SignalHistoryPage } from "./SignalHistoryPage";
 import { MarketTable } from "../components/market/MarketTable";
 import { useDashboardContext } from "../hooks/useDashboardContext";
 
@@ -5,6 +6,7 @@ type MarketListPageProps = { page: "관심 종목" | "신호 이력" };
 
 export function MarketListPage({ page }: MarketListPageProps) {
   const dashboard = useDashboardContext();
+  if (page === "신호 이력") return <SignalHistoryPage />;
   const markets =
     page === "관심 종목"
       ? dashboard.filteredStocks.filter(stock => dashboard.favoriteSymbols.includes(stock.symbol))
