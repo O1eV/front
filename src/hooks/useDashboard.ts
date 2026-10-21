@@ -8,6 +8,7 @@ export function useDashboard() {
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("1일");
   const [favoriteSymbols, setFavoriteSymbols] = useState<string[]>(["005930", "000660"]);
   const [signalFilter, setSignalFilter] = useState<MarketFilter>("전체");
+  const [toastMessage, setToastMessage] = useState("");
 
   function toggleFavorite(symbol: string) {
     setFavoriteSymbols(currentSymbols => {
@@ -41,5 +42,7 @@ export function useDashboard() {
     signalFilter,
     setSignalFilter,
     filteredStocks,
+    toastMessage,
+    setToastMessage,
   };
 }

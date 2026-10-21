@@ -1,50 +1,81 @@
 @import "./styles/tokens.css";
 
 :root {
-  font-family: var(--font-ui);
+  font-family:
+    "Pretendard Variable",
+    Pretendard,
+    -apple-system,
+    system-ui,
+    sans-serif;
   color: var(--ink-soft);
-  background: #f4f5f7;
+  background: var(--canvas-soft);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
   font-synthesis: none;
+  font-feature-settings: "lnum", "locl";
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
 }
+
+button,
+input,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
 button,
 input {
   font: inherit;
 }
+
+button {
+  cursor: pointer;
+  border: 0;
+  background: none;
+}
+
+button,
 a {
   color: inherit;
 }
-button,
-a,
-input {
-  -webkit-tap-highlight-color: transparent;
+
+a {
+  text-decoration: none;
 }
-:focus-visible {
+
+button {
+  transition:
+    background 180ms,
+    color 180ms;
+}
+
+button:hover {
+  background-color: var(--canvas-soft);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
 }
-.welcome {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-  text-align: center;
-}
-.welcome h1 {
-  margin: 24px 0 8px;
-  font-size: 28px;
-}
-.welcome p {
+
+h1,
+h2,
+p {
   margin: 0;
-  color: var(--text-muted);
+}
+
+::selection {
+  background: var(--hairline);
 }

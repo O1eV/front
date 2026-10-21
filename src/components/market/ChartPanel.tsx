@@ -35,7 +35,7 @@ export function ChartPanel({
           </h2>
           <button
             className={`star-button ${favoriteSymbols.includes(selectedStock.symbol) ? "is-favorite" : ""}`}
-            aria-label={`${selectedStock.name} 관심 ${favoriteSymbols.includes(selectedStock.symbol) ? "해제" : "등록"}`}
+            aria-label="선택 종목 관심 등록"
             aria-pressed={favoriteSymbols.includes(selectedStock.symbol)}
             onClick={() => toggleFavorite(selectedStock.symbol)}
           >
@@ -68,6 +68,17 @@ export function ChartPanel({
           </div>
         }
       />
+      <div className="chart-stats">
+        <div>
+          당일 최고가<strong>₩{formatNumber(Math.round(selectedStock.price * 1.012))}</strong>
+        </div>
+        <div>
+          당일 최저가<strong>₩{formatNumber(Math.round(selectedStock.price * 0.972))}</strong>
+        </div>
+        <div>
+          당일 거래대금<strong>1,284.6억</strong>
+        </div>
+      </div>
     </section>
   );
 }
