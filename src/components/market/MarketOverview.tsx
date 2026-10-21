@@ -18,7 +18,6 @@ export function MarketOverview({
           key={stock.symbol}
           onClick={() => setSelectedStock(stock)}
         >
-
           <div className="pulse-label">
             <span className="stock-icon" style={{ background: stock.color }}>
               {stock.icon}

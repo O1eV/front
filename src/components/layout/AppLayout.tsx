@@ -34,7 +34,6 @@ export function AppLayout() {
           setSelectedStock={dashboard.setSelectedStock}
           toggleFavorite={dashboard.toggleFavorite}
         />
-
       </div>
       {dashboard.toastMessage && (
         <Toast toastMessage={dashboard.toastMessage} setToastMessage={dashboard.setToastMessage} />

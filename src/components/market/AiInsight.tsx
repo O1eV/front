@@ -14,7 +14,6 @@ export function AiInsight({ selectedStock, featured = false }: AiInsightProps) {
   ];
   return (
     <section className={`panel ai-panel ${featured ? "ai-featured" : ""}`} aria-label="AI 판단">
-
       <div className="ai-heading">
         <h2>AI 판단</h2>
         <span className="pill">예시</span>

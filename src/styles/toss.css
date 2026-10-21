@@ -1807,8 +1807,17 @@ body,
   }
 }
 
-.crypto-panel { padding: 24px; }
+.crypto-panel {
+  padding: 24px;
+}
 
-.crypto-panel > .periods { margin: 16px 0; flex-wrap: wrap; }
+.crypto-panel > .periods {
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
 
-.crypto-source { padding: 16px 0; font-size: 12px; color: var(--text-muted); }
+.crypto-source {
+  padding: 16px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
