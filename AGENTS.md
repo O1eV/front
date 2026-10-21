@@ -70,3 +70,10 @@ Upbit WebSocket / KIS API
 - Branches: `main` (deploy, no direct push), `dev` (integration), `feature/{domainName}-{detail}`, `fix/{domainName}-{detail}`. Open PRs against `dev`. Each PR needs at least one review before merge.
 - Commit format: `type: 작업 내용`. Types: feat, fix, docs, style, refactor, test, chore, design, comment, rename, remove, !HOTFIX.
 - PR title format: `[타입] #이슈번호 제목`. Create a GitHub issue before starting work. Labels: FE / BE / AI / APP / 3D / DOC.
+
+## PR review with Claude
+
+- Claude runs only when someone mentions `@claude` in a PR comment, review comment, or review (`.github/workflows/claude-review.yml`). There is no automatic review on PR open or push.
+- Each run uses the user's Claude subscription quota. Call it only when needed.
+- The bot review is for reference only. It does not replace the one teammate review required before merge.
+- This repository has no build CI. Before merging, run `npm run build`, `npm run lint`, and `npm run format:check` locally.
