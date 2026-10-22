@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import "../../styles/navigation-flow.css";
 import { Icon } from "../ui/Icon";
 import type { Stock, ChartPeriod } from "../../types/market";
 import { formatNumber } from "../../utils/format";
@@ -27,12 +29,14 @@ export function ChartPanel({
           <span className="stock-icon" style={{ background: selectedStock.color }}>
             {selectedStock.icon}
           </span>
+
           <h2>
             {selectedStock.name}{" "}
             <small>
               {selectedStock.symbol} · {selectedStock.exchange}
             </small>
           </h2>
+
           <button
             className={`star-button ${favoriteSymbols.includes(selectedStock.symbol) ? "is-favorite" : ""}`}
             aria-label="선택 종목 관심 등록"
@@ -42,6 +46,7 @@ export function ChartPanel({
             <Icon name="star" size={17} />
           </button>
         </div>
+
         <div className="price-heading">
           ₩{formatNumber(selectedStock.price)}
           <span className={selectedStock.priceChangePercent > 0 ? "positive" : "negative"}>
@@ -50,6 +55,14 @@ export function ChartPanel({
           </span>
         </div>
       </div>
+
+      <div className="stock-actions">
+        <Link className="flow-primary" to={`/portfolio?symbol=${selectedStock.symbol}#paper-order`}>
+          모의 매수
+        </Link>
+        <Link to={`/signals?symbol=${selectedStock.symbol}`}>신호 이력 보기</Link>
+      </div>
+
       <PriceChart
         stock={selectedStock}
         chartPeriod={chartPeriod}
@@ -68,13 +81,16 @@ export function ChartPanel({
           </div>
         }
       />
+
       <div className="chart-stats">
         <div>
           당일 최고가<strong>₩{formatNumber(Math.round(selectedStock.price * 1.012))}</strong>
         </div>
+
         <div>
           당일 최저가<strong>₩{formatNumber(Math.round(selectedStock.price * 0.972))}</strong>
         </div>
+
         <div>
           당일 거래대금<strong>1,284.6억</strong>
         </div>

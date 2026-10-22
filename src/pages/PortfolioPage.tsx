@@ -1,3 +1,5 @@
+import { useSearchParams } from "react-router-dom";
+import { useDashboardContext } from "../hooks/useDashboardContext";
 import { useState, type FormEvent } from "react";
 import { sampleStocks } from "../data/markets";
 import {
@@ -54,8 +56,17 @@ function readAccount(): PaperAccount {
   return createPaperAccount();
 }
 export function PortfolioPage() {
+  const [params] = useSearchParams();
+  const { selectedStock } = useDashboardContext();
+  const initialSymbol =
+    sampleStocks.find(stock => stock.symbol === params.get("symbol"))?.symbol ??
+    selectedStock.symbol;
+  return <PortfolioWorkspace key={initialSymbol} initialSymbol={initialSymbol} />;
+}
+
+function PortfolioWorkspace({ initialSymbol }: { initialSymbol: string }) {
   const [account, setAccount] = useState(readAccount);
-  const [symbol, setSymbol] = useState(sampleStocks[0].symbol);
+  const [symbol, setSymbol] = useState(initialSymbol);
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [quantity, setQuantity] = useState("");
   const [feedback, setFeedback] = useState("");
@@ -185,7 +196,7 @@ export function PortfolioPage() {
             <div className="no-results">아직 보유한 종목이 없어요. 첫 모의 주문을 해보세요.</div>
           )}
         </section>
-        <section className="panel order-panel">
+        <section className="panel order-panel" id="paper-order" tabIndex={-1}>
           <h2>모의 주문</h2>
           <p className="order-description">시장가 · 샘플 현재가로 즉시 체결</p>
           <form onSubmit={handleSubmit}>

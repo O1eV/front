@@ -32,38 +32,46 @@ export function MarketRow({
           <Icon name="star" size={17} />
         </button>
       </td>
+
       <td>
         <Link
-          to="/"
+          to={`/?symbol=${stock.symbol}`}
           className="table-stock"
           onClick={() => {
             setSelectedStock(stock);
+
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         >
           <span className="stock-icon" style={{ background: stock.color }}>
             {stock.icon}
           </span>
+
           <span>
             {stock.name}
             <small>{stock.symbol}</small>
           </span>
         </Link>
       </td>
+
       <td className="table-price">₩{formatNumber(stock.price)}</td>
+
       <td className={stock.priceChangePercent > 0 ? "positive" : "negative"}>
         {stock.priceChangePercent > 0 ? "+" : ""}
         {stock.priceChangePercent.toFixed(2)}%
       </td>
+
       <td>
         <Sparkline seed={index} down={stock.priceChangePercent < 0} />
       </td>
+
       <td>
         <span className={`signal-pill ${stock.buyProbability > 50 ? "" : "neutral"}`}>
           <span />
           {stock.buyProbability > 50 ? "매수 우세" : "관망 우세"}
         </span>
       </td>
+
       <td>
         {showHistory ? (
           `10:${40 - index * 7}`
@@ -71,19 +79,22 @@ export function MarketRow({
           <span className="table-percent">
             {stock.buyProbability}
             <small>%</small>
+
             <span className="mini-track">
               <i style={{ width: `${stock.buyProbability}%` }} />
             </span>
           </span>
         )}
       </td>
+
       <td>
         <Link
-          to="/"
+          to={`/?symbol=${stock.symbol}`}
           className="icon-button"
           aria-label={`${stock.name} 상세 보기`}
           onClick={() => {
             setSelectedStock(stock);
+
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         >

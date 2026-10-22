@@ -1,9 +1,24 @@
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { sampleStocks } from "../data/markets";
 import type { Stock, MarketFilter, ChartPeriod } from "../types/market";
 
 export function useDashboard() {
-  const [selectedStock, setSelectedStock] = useState<Stock>(sampleStocks[0]);
+  const [lastSelectedStock, setLastSelectedStock] = useState<Stock>(sampleStocks[0]);
+  const [params, setParams] = useSearchParams();
+  const { pathname } = useLocation();
+  const selectedStock =
+    sampleStocks.find(stock => stock.symbol === params.get("symbol")) ?? lastSelectedStock;
+
+  function setSelectedStock(stock: Stock) {
+    setLastSelectedStock(stock);
+    if (pathname === "/") {
+      setParams(previous => {
+        previous.set("symbol", stock.symbol);
+        return previous;
+      });
+    }
+  }
   const [searchQuery, setSearchQuery] = useState("");
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("1일");
   const [favoriteSymbols, setFavoriteSymbols] = useState<string[]>(["005930", "000660"]);
@@ -13,9 +28,11 @@ export function useDashboard() {
   function toggleFavorite(symbol: string) {
     setFavoriteSymbols(currentSymbols => {
       const isAlreadyFavorite = currentSymbols.includes(symbol);
+
       if (isAlreadyFavorite) {
         return currentSymbols.filter(favoriteSymbol => favoriteSymbol !== symbol);
       }
+
       return [...currentSymbols, symbol];
     });
   }
@@ -26,7 +43,9 @@ export function useDashboard() {
     const matchesQuery = `${stock.name}${stock.symbol}`
       .toLowerCase()
       .includes(normalizedSearchQuery);
+
     const matchesSignal = signalFilter !== "매수 신호" || stock.buyProbability > 50;
+
     return matchesQuery && matchesSignal;
   });
 
