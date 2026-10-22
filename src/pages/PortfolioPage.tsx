@@ -37,12 +37,14 @@ function PortfolioWorkspace({ initialSymbol }: { initialSymbol: string }) {
       <AccountSummary {...portfolio} />
 
       <div className="paper-grid">
-        <HoldingsTable {...portfolio} />
+        <div className="paper-records">
+          <HoldingsTable {...portfolio} />
+          <OrderHistory {...portfolio} />
+          <ResetAccount {...portfolio} />
+        </div>
+
         <PaperOrderForm {...portfolio} />
       </div>
-
-      <OrderHistory {...portfolio} />
-      <ResetAccount {...portfolio} />
     </div>
   );
 }
