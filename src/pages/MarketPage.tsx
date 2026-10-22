@@ -1,5 +1,5 @@
 import { MarketOverview } from "../components/market/MarketOverview";
-import { MarketRanking } from "../components/market/MarketRanking";
+import { MarketCatalog } from "../components/market/MarketCatalog";
 import { ChartPanel } from "../components/market/ChartPanel";
 import { AiInsight } from "../components/market/AiInsight";
 import { useDashboardContext } from "../hooks/useDashboardContext";
@@ -12,7 +12,6 @@ export function MarketPage() {
     toggleFavorite,
     chartPeriod,
     setChartPeriod,
-    filteredStocks,
   } = useDashboardContext();
 
   return (
@@ -43,13 +42,7 @@ export function MarketPage() {
           </div>
         </div>
 
-        <MarketRanking
-          markets={filteredStocks}
-          selectedStock={selectedStock}
-          favoriteSymbols={favoriteSymbols}
-          setSelectedStock={setSelectedStock}
-          toggleFavorite={toggleFavorite}
-        />
+        <MarketCatalog />
       </div>
     </div>
   );
