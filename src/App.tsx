@@ -1,3 +1,4 @@
+import { MyInfoPage } from "./pages/MyInfoPage";
 import { CryptoPage } from "./pages/CryptoPage";
 import { Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
@@ -18,6 +19,7 @@ export default function App() {
 
       <Route path="/" element={<AppLayout />}>
         <Route index element={<MarketPage />} />
+        <Route path="/me" element={<MyInfoPage />} />
         <Route path="/crypto" element={<CryptoPage />} />
         <Route path={pagePaths["관심 종목"]} element={<MarketListPage page="관심 종목" />} />
         <Route path={pagePaths["신호 이력"]} element={<MarketListPage page="신호 이력" />} />

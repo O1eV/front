@@ -70,7 +70,9 @@ export function Sidebar({ favoriteSymbols, selectedSymbol, onSelectStock }: Side
       <div className="auth-nav">
         {session ? (
           <>
-            <span>{session.user.nickname}님</span>
+            <Link to="/me" aria-label="내 정보">
+              {session.user.nickname}님
+            </Link>
 
             <button type="button" onClick={handleLogout} disabled={loggingOut}>
               {loggingOut ? "처리 중…" : "로그아웃"}
