@@ -14,6 +14,7 @@ export function MarketPage() {
     setChartPeriod,
     filteredStocks,
   } = useDashboardContext();
+
   return (
     <div className="market-home">
       <div className="market-status">
@@ -21,9 +22,12 @@ export function MarketPage() {
           <i />
           국내 주식
         </span>
+
         <span>코스피 · 코스닥</span>
       </div>
+
       <MarketOverview selectedStock={selectedStock} setSelectedStock={setSelectedStock} />
+
       <div className="market-explorer">
         <div className="stock-detail">
           <div className="chart-ai-pair">
@@ -34,9 +38,11 @@ export function MarketPage() {
               chartPeriod={chartPeriod}
               setChartPeriod={setChartPeriod}
             />
+
             <AiInsight selectedStock={selectedStock} featured />
           </div>
         </div>
+
         <MarketRanking
           markets={filteredStocks}
           selectedStock={selectedStock}

@@ -22,12 +22,14 @@ export function MarketOverview({
             <span className="stock-icon" style={{ background: stock.color }}>
               {stock.icon}
             </span>
+
             <strong>{stock.name}</strong>
             <span className="pulse-symbol">{stock.symbol}</span>
           </div>
 
           <div className="pulse-price">
             {formatNumber(stock.price)}
+
             <small className={stock.priceChangePercent > 0 ? "positive" : "negative"}>
               {stock.priceChangePercent > 0 ? "+" : ""}
               {stock.priceChangePercent}%

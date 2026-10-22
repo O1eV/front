@@ -59,6 +59,7 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
       </>
     ),
   };
+
   return (
     <svg
       width={size}

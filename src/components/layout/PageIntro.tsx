@@ -7,6 +7,7 @@ export function PageIntro({ page }: { page: Page }) {
     "신호 이력": "신호 이력",
     "모의 포트폴리오": "모의투자",
   };
+
   return (
     <div className="page-heading">
       <div className="page-title">

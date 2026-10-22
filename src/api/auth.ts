@@ -1,8 +1,11 @@
 import { apiClient } from "./apiClient";
 
 export type AuthUser = { userId: string; email: string; nickname: string };
+
 export type AuthTokens = { accessToken: string; refreshToken: string; expiresIn: number };
+
 export type LoginResponse = AuthTokens & { user: AuthUser };
+
 export type RegisterRequest = {
   email: string;
   password: string;

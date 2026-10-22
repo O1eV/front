@@ -6,11 +6,14 @@ type MarketListPageProps = { page: "관심 종목" | "신호 이력" };
 
 export function MarketListPage({ page }: MarketListPageProps) {
   const dashboard = useDashboardContext();
+
   if (page === "신호 이력") return <SignalHistoryPage />;
+
   const markets =
     page === "관심 종목"
       ? dashboard.filteredStocks.filter(stock => dashboard.favoriteSymbols.includes(stock.symbol))
       : dashboard.filteredStocks;
+
   return (
     <MarketTable
       page={page}

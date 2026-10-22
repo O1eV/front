@@ -6,6 +6,7 @@ import { formatNumber } from "../../utils/format";
 import { CandleTooltip } from "./CandleTooltip";
 
 type ChartMode = "candles" | "line";
+
 type HoveredCandle = { index: number; left: number; top: number };
 
 const TOOLTIP_WIDTH = 220;
@@ -31,6 +32,7 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
     () => liveCandles ?? createSampleCandles(stock, chartPeriod),
     [stock, chartPeriod, liveCandles]
   );
+
   const spacing = 680 / Math.max(1, candles.length - 1);
   const getCandleX = (index: number) => index * spacing + FIRST_CANDLE_X;
   const minimum = Math.min(...candles.map(c => c.low));
@@ -41,6 +43,7 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
 
   const getPriceY = (price: number) =>
     liveCandles ? 210 - ((price - bottom) / range) * 180 : priceToY(price, stock.price);
+
   const maximumVolume = Math.max(1, ...candles.map(candle => candle.volume));
   const linePoints = candles
     .map((candle, index) => `${getCandleX(index)},${getPriceY(candle.close)}`)
@@ -64,17 +67,21 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
   function handlePointerMove(event: PointerEvent<SVGSVGElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
     const svgX = ((event.clientX - bounds.left) / bounds.width) * CHART_WIDTH;
+
     selectCandle(Math.round((svgX - FIRST_CANDLE_X) / spacing), bounds);
   }
 
   function handleKeyDown(event: KeyboardEvent<SVGSVGElement>) {
     if (event.key === "Escape") {
       setHoveredCandle(null);
+
       return;
     }
 
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
     event.preventDefault();
+
     selectCandle(
       (hoveredCandle?.index ?? DEFAULT_CANDLE_INDEX) + (event.key === "ArrowRight" ? 1 : -1),
       event.currentTarget.getBoundingClientRect()
@@ -85,15 +92,18 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
     <div className="chart-wrap">
       <div className="chart-toolbar">
         {periodControls}
+
         <div className="chart-mode" aria-label="차트 종류">
           <button aria-pressed={chartMode === "candles"} onClick={() => setChartMode("candles")}>
             캔들
           </button>
+
           <button aria-pressed={chartMode === "line"} onClick={() => setChartMode("line")}>
             라인
           </button>
         </div>
       </div>
+
       <div className="chart-y">
         {[1.02, 1.01, 1, 0.99, 0.98].map(ratio => (
           <span key={ratio}>
@@ -105,6 +115,7 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
           </span>
         ))}
       </div>
+
       <div className="chart-plot" onPointerLeave={() => setHoveredCandle(null)}>
         <svg
           role="img"
@@ -123,12 +134,15 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
           {[30, 75, 120, 165, 210].map(y => (
             <line key={y} x1="0" x2="720" y1={y} y2={y} stroke="var(--hairline-soft)" />
           ))}
+
           {candles.map((candle, index) => {
             const color = candle.close >= candle.open ? "var(--positive)" : "var(--negative)";
             const x = getCandleX(index);
             const openY = getPriceY(candle.open),
               closeY = getPriceY(candle.close);
+
             const volumeHeight = (candle.volume / maximumVolume) * 34;
+
             return (
               <g key={index}>
                 <rect
@@ -139,6 +153,7 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
                   fill={color}
                   opacity=".3"
                 />
+
                 {chartMode === "candles" && (
                   <>
                     <line
@@ -148,6 +163,7 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
                       y2={getPriceY(candle.low)}
                       stroke={color}
                     />
+
                     <rect
                       x={x - 2.5}
                       y={Math.min(openY, closeY)}
@@ -160,9 +176,11 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
               </g>
             );
           })}
+
           {chartMode === "line" && (
             <polyline points={linePoints} fill="none" stroke="var(--primary)" strokeWidth="2" />
           )}
+
           {hoveredCandle && (
             <>
               <line
@@ -173,6 +191,7 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
                 stroke="var(--text-faint)"
                 strokeDasharray="4 4"
               />
+
               <circle
                 cx={getCandleX(hoveredCandle.index)}
                 cy={getPriceY(candles[hoveredCandle.index].close)}
@@ -182,6 +201,7 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
             </>
           )}
         </svg>
+
         {hoveredCandle && (
           <CandleTooltip
             candle={candles[hoveredCandle.index]}
@@ -191,9 +211,11 @@ export function PriceChart({ chartPeriod, stock, periodControls, liveCandles }: 
           />
         )}
       </div>
+
       <div className="chart-x">
         {TIME_LABEL_INDICES.map((_, labelIndex) => {
           const index = Math.round((labelIndex / 5) * (candles.length - 1));
+
           return (
             <span key={index}>
               {new Intl.DateTimeFormat("ko-KR", {

@@ -5,6 +5,7 @@ export async function apiClient<T>(
   options: { method?: string; body?: unknown; token?: string } = {}
 ): Promise<T> {
   let response: Response;
+
   try {
     response = await fetch(`${apiBaseUrl}/${path.replace(/^\/+/, "")}`, {
       method: options.method ?? "GET",

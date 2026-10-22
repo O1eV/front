@@ -7,6 +7,7 @@ interface CandleTooltipProps {
   top: number;
   live?: boolean;
 }
+
 const dateFormat = new Intl.DateTimeFormat("ko-KR", {
   timeZone: "Asia/Seoul",
   year: "numeric",
@@ -14,6 +15,7 @@ const dateFormat = new Intl.DateTimeFormat("ko-KR", {
   day: "2-digit",
   weekday: "short",
 });
+
 const timeFormat = new Intl.DateTimeFormat("ko-KR", {
   timeZone: "Asia/Seoul",
   hour: "2-digit",
@@ -23,6 +25,7 @@ const timeFormat = new Intl.DateTimeFormat("ko-KR", {
 
 export function CandleTooltip({ candle, left, top, live }: CandleTooltipProps) {
   const date = new Date(candle.timestamp);
+
   return (
     <div role="tooltip" className="candle-tooltip" style={{ left, top }}>
       <strong>
@@ -43,8 +46,10 @@ export function CandleTooltip({ candle, left, top, live }: CandleTooltipProps) {
             <dd>{item.value}</dd>
           </div>
         ))}
+
         <div>
           <dt>등락률</dt>
+
           <dd
             className={
               candle.priceChangePercent > 0
@@ -59,6 +64,7 @@ export function CandleTooltip({ candle, left, top, live }: CandleTooltipProps) {
           </dd>
         </div>
       </dl>
+
       <span className="tooltip-footnote">
         {live ? "업비트 시세" : "샘플 데이터"} · 등락률은 직전 종가 대비
       </span>

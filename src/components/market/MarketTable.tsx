@@ -40,23 +40,28 @@ export function MarketTable({
                 : "관심 있게 볼 시장"}{" "}
             <span className="heading-count">{filteredStocks.length}</span>
           </h2>
+
           <p>
             {page === "신호 이력"
               ? "시간에 따른 신호 변화를 살펴보세요."
               : "시장의 움직임과 AI 신호를 함께 살펴보세요."}
           </p>
         </div>
+
         <label className="search">
           <Icon name="search" size={17} />
+
           <input
             aria-label="종목 검색"
             placeholder="종목명 또는 종목코드 검색"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
+
           <kbd>⌕</kbd>
         </label>
       </div>
+
       <div className="table-tabs">
         {(["전체", "매수 신호"] as const).map(f => (
           <button
@@ -68,8 +73,10 @@ export function MarketTable({
             {f === "전체" && <span>4</span>}
           </button>
         ))}
+
         <span className="table-info">국내 주식 · 원화</span>
       </div>
+
       <div className="table-scroll">
         <table>
           <thead>
@@ -84,6 +91,7 @@ export function MarketTable({
               <th />
             </tr>
           </thead>
+
           <tbody>
             {filteredStocks.map((stock, index) => (
               <MarketRow
@@ -98,6 +106,7 @@ export function MarketTable({
             ))}
           </tbody>
         </table>
+
         {filteredStocks.length === 0 && (
           <div className="no-results">
             {searchQuery
@@ -106,8 +115,10 @@ export function MarketTable({
           </div>
         )}
       </div>
+
       <div className="table-footer">
         <span>모든 수치는 UI 시연을 위한 샘플 데이터입니다.</span>
+
         <button
           onClick={() => {
             setToastMessage("현재 MVP는 국내 주식 4종목을 미리보기로 제공합니다.");
