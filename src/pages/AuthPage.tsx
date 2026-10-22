@@ -58,7 +58,7 @@ export function AuthPage({ mode }: AuthPageProps) {
 
         navigate("/login", { replace: true, state: { registered: true } });
       } else {
-        await login(email, password);
+        await login(email, password, values.get("rememberMe") === "on");
 
         navigate("/", { replace: true });
       }
@@ -123,6 +123,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                 name="email"
                 type="email"
                 autoComplete="email"
+                maxLength={255}
                 placeholder="example@email.com"
                 required
               />
@@ -205,6 +206,13 @@ export function AuthPage({ mode }: AuthPageProps) {
                   투자 유의사항 동의 (필수)
                 </label>
               </fieldset>
+            )}
+
+            {!isSignup && (
+              <label className="auth-remember">
+                <input type="checkbox" name="rememberMe" />
+                로그인 상태 유지
+              </label>
             )}
 
             <button className="auth-submit" type="submit" disabled={isSubmitting}>

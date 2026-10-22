@@ -1,4 +1,5 @@
 import { loginUser, logoutUser, refreshTokens, type LoginResponse } from "../api/auth";
+import { ApiError, setRefreshHandler } from "../api/apiClient";
 import { useSyncExternalStore } from "react";
 
 type Session = LoginResponse & { expiresAt: number };
@@ -9,11 +10,13 @@ function readSession(): Session | null {
   try {
     const value = JSON.parse(sessionStorage.getItem(storageKey) || "null");
 
-    return value?.accessToken &&
-      value?.refreshToken &&
-      value?.user?.nickname &&
-      Number.isFinite(value?.expiresAt)
-      ? value
+    return value?.accessToken && value?.user?.nickname && Number.isFinite(value?.expiresAt)
+      ? {
+          accessToken: value.accessToken,
+          expiresIn: value.expiresIn,
+          user: value.user,
+          expiresAt: value.expiresAt,
+        }
       : null;
   } catch {
     return null;
@@ -22,6 +25,8 @@ function readSession(): Session | null {
 
 let session = readSession();
 const listeners = new Set<() => void>();
+let refreshing: Promise<string | undefined> | undefined;
+let loggingOut = false;
 let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
 function saveSession(value: Session | null) {
@@ -42,7 +47,7 @@ function saveSession(value: Session | null) {
 function scheduleRefresh() {
   clearTimeout(refreshTimer);
 
-  if (!session) return;
+  if (!session || loggingOut) return;
 
   refreshTimer = setTimeout(
     () => {
@@ -52,20 +57,46 @@ function scheduleRefresh() {
   );
 }
 
-async function refreshSession() {
+function refreshSession(): Promise<string | undefined> {
+  if (loggingOut || !session) return Promise.resolve(undefined);
+  if (refreshing) return refreshing;
+
   const previous = session;
 
-  if (!previous) return;
+  refreshing = (async () => {
+    try {
+      const tokens = await refreshTokens();
 
-  try {
-    const tokens = await refreshTokens(previous.refreshToken);
+      if (session !== previous) return undefined;
 
-    if (session === previous)
       saveSession({ ...previous, ...tokens, expiresAt: Date.now() + tokens.expiresIn * 1000 });
-  } catch {
-    if (session === previous) saveSession(null);
-  }
+      return tokens.accessToken;
+    } catch (error) {
+      if (session === previous) {
+        if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+          saveSession(null);
+        } else {
+          clearTimeout(refreshTimer);
+          refreshTimer = setTimeout(() => {
+            void refreshSession();
+          }, 30_000);
+        }
+      }
+      return undefined;
+    } finally {
+      refreshing = undefined;
+    }
+  })();
+
+  return refreshing;
 }
+
+setRefreshHandler(async rejectedToken => {
+  if (!session || loggingOut) return undefined;
+  if (session.accessToken !== rejectedToken) return session.accessToken;
+
+  return refreshSession();
+});
 
 scheduleRefresh();
 
@@ -82,18 +113,28 @@ export function useAuthSession() {
   );
 }
 
-export async function login(email: string, password: string) {
-  const result = await loginUser(email, password);
+export async function login(email: string, password: string, rememberMe = false) {
+  const result = await loginUser(email, password, rememberMe);
 
   saveSession({ ...result, expiresAt: Date.now() + result.expiresIn * 1000 });
 }
 
 export async function logout() {
-  const previous = session;
+  if (!session || loggingOut) return;
 
-  if (!previous) return;
+  loggingOut = true;
+  clearTimeout(refreshTimer);
 
-  await logoutUser(previous.refreshToken, previous.accessToken);
+  try {
+    // Finish cookie rotation before revoking the session to avoid restoring a logged-out cookie.
+    await refreshing;
+    const previous = session;
+    if (!previous) return;
 
-  if (session === previous) saveSession(null);
+    await logoutUser(previous.accessToken);
+    if (session === previous) saveSession(null);
+  } finally {
+    loggingOut = false;
+    scheduleRefresh();
+  }
 }

@@ -1,14 +1,37 @@
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/+$/, "");
 
+type RefreshHandler = (rejectedToken: string) => Promise<string | undefined>;
+let refreshHandler: RefreshHandler | undefined;
+
+export function setRefreshHandler(handler: RefreshHandler) {
+  refreshHandler = handler;
+}
+
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 export async function apiClient<T>(
   path: string,
-  options: { method?: string; body?: unknown; token?: string; signal?: AbortSignal } = {}
+  options: {
+    method?: string;
+    body?: unknown;
+    token?: string;
+    signal?: AbortSignal;
+    skipRefresh?: boolean;
+  } = {}
 ): Promise<T> {
   let response: Response;
 
   try {
     response = await fetch(`${apiBaseUrl}/${path.replace(/^\/+/, "")}`, {
       method: options.method ?? "GET",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
@@ -25,8 +48,18 @@ export async function apiClient<T>(
 
   const result = await response.json().catch(() => null);
 
+  if (response.status === 401 && options.token && !options.skipRefresh && refreshHandler) {
+    const token = await refreshHandler(options.token);
+
+    if (token && !options.signal?.aborted)
+      return apiClient<T>(path, { ...options, token, skipRefresh: true });
+  }
+
   if (!response.ok)
-    throw new Error(result?.message || "요청을 처리하지 못했어요. 다시 시도해주세요.");
+    throw new ApiError(
+      result?.message || "요청을 처리하지 못했어요. 다시 시도해주세요.",
+      response.status
+    );
 
   if (!result || !("data" in result)) throw new Error("서버 응답을 확인할 수 없어요.");
 
