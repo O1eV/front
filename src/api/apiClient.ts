@@ -2,7 +2,7 @@ const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/+$/,
 
 export async function apiClient<T>(
   path: string,
-  options: { method?: string; body?: unknown; token?: string } = {}
+  options: { method?: string; body?: unknown; token?: string; signal?: AbortSignal } = {}
 ): Promise<T> {
   let response: Response;
 
@@ -15,7 +15,9 @@ export async function apiClient<T>(
       },
 
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
-      signal: AbortSignal.timeout(15_000),
+      signal: options.signal
+        ? AbortSignal.any([options.signal, AbortSignal.timeout(15_000)])
+        : AbortSignal.timeout(15_000),
     });
   } catch {
     throw new Error("서버에 연결하지 못했어요. 잠시 후 다시 시도해주세요.");
