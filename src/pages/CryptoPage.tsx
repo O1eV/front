@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { coinMarkets, getCoinChart } from "../api/upbit";
+import { coinMarkets } from "../api/upbit";
+import { chartIntervals, getCoinChart } from "../api/coinChart";
 import { PriceChart } from "../components/market/PriceChart";
 import { PERIODS, type ChartPeriod, type Stock } from "../types/market";
 import { formatNumber } from "../utils/format";
@@ -64,8 +65,8 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
     ? {
         ...coin,
         exchange: "UPBIT",
-        price: data.ticker.trade_price,
-        priceChangePercent: data.ticker.signed_change_rate * 100,
+        price: data.ticker.price,
+        priceChangePercent: data.ticker.changeRate * 100,
         buyProbability: 0,
       }
     : undefined;
@@ -75,7 +76,7 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
       <div className="section-heading">
         <div>
           <h1>코인 시세</h1>
-          <p>업비트 원화 마켓 · 20초마다 갱신</p>
+          <p>서버 시세 · 원화 마켓 · 20초마다 갱신</p>
         </div>
       </div>
 
@@ -140,31 +141,19 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
 
           <div className="chart-stats">
             <div>
-              당일 최고가<strong>₩{formatNumber(data.ticker.high_price)}</strong>
+              조회 구간 최고가
+              <strong>₩{formatNumber(Math.max(...data.candles.map(candle => candle.high)))}</strong>
             </div>
 
             <div>
-              당일 최저가<strong>₩{formatNumber(data.ticker.low_price)}</strong>
-            </div>
-
-            <div>
-              24시간 거래대금
-              <strong>{(data.ticker.acc_trade_price_24h / 100_000_000).toFixed(1)}억 원</strong>
+              조회 구간 최저가
+              <strong>₩{formatNumber(Math.min(...data.candles.map(candle => candle.low)))}</strong>
             </div>
           </div>
 
           <p className="crypto-source">
-            업비트 실제 시세 · 마지막 조회 {new Date(data.updatedAt).toLocaleTimeString("ko-KR")}{" "}
-            {state.error ? "· 갱신 실패, 이전 조회 데이터" : ""} ·{" "}
-            {period === "1년"
-              ? "주봉"
-              : period === "1개월"
-                ? "일봉"
-                : period === "1주"
-                  ? "4시간봉"
-                  : period === "1일"
-                    ? "15분봉"
-                    : "1분봉"}
+            서버 API 시세 · 마지막 조회 {new Date(data.updatedAt).toLocaleTimeString("ko-KR")}{" "}
+            {state.error ? "· 갱신 실패, 이전 조회 데이터" : ""} · {chartIntervals[period].label}
           </p>
         </>
       )}
