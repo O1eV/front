@@ -1,29 +1,19 @@
 import { loginUser, logoutUser, refreshTokens, type LoginResponse } from "../api/auth";
-import { ApiError, setRefreshHandler } from "../api/apiClient";
+import { apiClient, ApiError, setRefreshHandler } from "../api/apiClient";
 import { useSyncExternalStore } from "react";
 
 type Session = LoginResponse & { expiresAt: number };
 
-const storageKey = "oev.auth";
-
-function readSession(): Session | null {
-  try {
-    const value = JSON.parse(sessionStorage.getItem(storageKey) || "null");
-
-    return value?.accessToken && value?.user?.nickname && Number.isFinite(value?.expiresAt)
-      ? {
-          accessToken: value.accessToken,
-          expiresIn: value.expiresIn,
-          user: value.user,
-          expiresAt: value.expiresAt,
-        }
-      : null;
-  } catch {
-    return null;
-  }
+// Remove credentials left by earlier versions; tokens are never read from browser storage.
+try {
+  sessionStorage.removeItem("oev.auth");
+} catch {
+  // Storage may be unavailable in private browsing.
 }
 
-let session = readSession();
+let session: Session | null = null;
+let initialized = false;
+let initializing: Promise<void> | undefined;
 const listeners = new Set<() => void>();
 let refreshing: Promise<string | undefined> | undefined;
 let loggingOut = false;
@@ -31,13 +21,6 @@ let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
 function saveSession(value: Session | null) {
   session = value;
-
-  try {
-    if (value) sessionStorage.setItem(storageKey, JSON.stringify(value));
-    else sessionStorage.removeItem(storageKey);
-  } catch {
-    /* Keep the current session in memory when browser storage is unavailable. */
-  }
 
   listeners.forEach(listener => listener());
 
@@ -57,8 +40,8 @@ function scheduleRefresh() {
   );
 }
 
-function refreshSession(): Promise<string | undefined> {
-  if (loggingOut || !session) return Promise.resolve(undefined);
+function refreshSession(duringLogout = false): Promise<string | undefined> {
+  if ((loggingOut && !duringLogout) || !session) return Promise.resolve(undefined);
   if (refreshing) return refreshing;
 
   const previous = session;
@@ -98,7 +81,40 @@ setRefreshHandler(async rejectedToken => {
   return refreshSession();
 });
 
-scheduleRefresh();
+export function initializeAuth(): Promise<void> {
+  if (initializing) return initializing;
+
+  initializing = (async () => {
+    try {
+      const tokens = await refreshTokens();
+      const { user } = await apiClient<{ user: LoginResponse["user"] }>("users/me", {
+        token: tokens.accessToken,
+        skipRefresh: true,
+      });
+
+      saveSession({ ...tokens, user, expiresAt: Date.now() + tokens.expiresIn * 1000 });
+    } catch {
+      // No valid cookie or a failed connection leaves the app signed out.
+    } finally {
+      initialized = true;
+      listeners.forEach(listener => listener());
+    }
+  })();
+
+  return initializing;
+}
+
+export function useAuthReady() {
+  return useSyncExternalStore(
+    listener => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    () => initialized
+  );
+}
 
 export function useAuthSession() {
   return useSyncExternalStore(
@@ -131,8 +147,23 @@ export async function logout() {
     const previous = session;
     if (!previous) return;
 
-    await logoutUser(previous.accessToken);
-    if (session === previous) saveSession(null);
+    let endingSession = previous;
+
+    try {
+      await logoutUser(previous.accessToken);
+    } catch (error) {
+      if (!(error instanceof ApiError) || error.status !== 401 || error.code !== "TOKEN_EXPIRED")
+        throw error;
+
+      const token = await refreshSession(true);
+      if (!token) throw error;
+
+      if (!session || session.accessToken !== token) throw error;
+      endingSession = session;
+      await logoutUser(token);
+    }
+
+    if (session === endingSession) saveSession(null);
   } finally {
     loggingOut = false;
     scheduleRefresh();

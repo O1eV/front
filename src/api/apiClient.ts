@@ -9,10 +9,12 @@ export function setRefreshHandler(handler: RefreshHandler) {
 
 export class ApiError extends Error {
   status: number;
+  code?: string;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, code?: string) {
     super(message);
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -48,7 +50,13 @@ export async function apiClient<T>(
 
   const result = await response.json().catch(() => null);
 
-  if (response.status === 401 && options.token && !options.skipRefresh && refreshHandler) {
+  if (
+    response.status === 401 &&
+    result?.error === "TOKEN_EXPIRED" &&
+    options.token &&
+    !options.skipRefresh &&
+    refreshHandler
+  ) {
     const token = await refreshHandler(options.token);
 
     if (token && !options.signal?.aborted)
@@ -58,7 +66,8 @@ export async function apiClient<T>(
   if (!response.ok)
     throw new ApiError(
       result?.message || "요청을 처리하지 못했어요. 다시 시도해주세요.",
-      response.status
+      response.status,
+      typeof result?.error === "string" ? result.error : undefined
     );
 
   if (!result || !("data" in result)) throw new Error("서버 응답을 확인할 수 없어요.");

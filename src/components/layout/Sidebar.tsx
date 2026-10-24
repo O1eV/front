@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { logout, useAuthSession } from "../../lib/auth";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { GlobalSearch } from "./GlobalSearch";
 import { pagePaths } from "../../routes/paths";
 import type { Page, Stock } from "../../types/market";
@@ -20,6 +20,7 @@ const navigation: { page: Page; label: string }[] = [
 
 export function Sidebar({ favoriteSymbols, selectedSymbol, onSelectStock }: SidebarProps) {
   const session = useAuthSession();
+  const navigate = useNavigate();
   const [logoutError, setLogoutError] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -30,6 +31,7 @@ export function Sidebar({ favoriteSymbols, selectedSymbol, onSelectStock }: Side
 
     try {
       await logout();
+      navigate("/", { replace: true });
     } catch {
       setLogoutError("로그아웃에 실패했어요. 다시 시도해주세요.");
     } finally {
