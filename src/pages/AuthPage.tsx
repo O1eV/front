@@ -73,7 +73,7 @@ export function AuthPage({ mode }: AuthPageProps) {
     <div className="auth-page">
       <header className="auth-header">
         <Link className="auth-brand" to="/" aria-label="OeV 홈">
-          <img src="/favicon.svg?v=4" alt="" width="36" height="36" />
+          <img src="/logo.png" alt="" width="36" height="36" />
           <span>OeV</span>
         </Link>
 

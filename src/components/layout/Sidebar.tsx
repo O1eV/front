@@ -40,7 +40,7 @@ export function Sidebar({ favoriteSymbols, selectedSymbol, onSelectStock }: Side
   return (
     <header className="sidebar">
       <Link className="brand" to="/" aria-label="OeV 홈">
-        <img src="/favicon.svg?v=4" alt="" width="36" height="36" />
+        <img src="/logo.png" alt="" width="36" height="36" />
       </Link>
 
       <nav aria-label="주 메뉴">
