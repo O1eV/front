@@ -1,0 +1,46 @@
+.my-info-page {
+  max-width: 800px;
+  margin: 24px auto;
+}
+.my-info-body,
+.my-info-message {
+  padding: 24px;
+}
+.my-info-body h2 {
+  margin: 0 0 20px;
+  font-size: 18px;
+}
+.my-info-fields {
+  margin: 0 0 36px;
+}
+.my-info-fields > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.my-info-fields dt,
+.my-info-note {
+  color: var(--text-muted);
+}
+.my-info-fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+.my-info-note {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.my-info-message button {
+  padding: 10px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+}
+@media (max-width: 600px) {
+  .my-info-body,
+  .my-info-message {
+    padding: 16px;
+  }
+}

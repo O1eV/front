@@ -1,0 +1,50 @@
+.catalog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+}
+.catalog-filters label {
+  display: grid;
+  flex: 1 1 120px;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.catalog-filters select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+}
+.catalog-filters select:disabled {
+  opacity: 0.5;
+}
+.catalog-note {
+  padding: 0 20px 12px;
+  font-size: 13px;
+}
+.catalog-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+.catalog-pagination button {
+  padding: 8px 12px;
+}
+
+.watchlist-content {
+  padding: 20px;
+}
+.watchlist-content h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+.watchlist-content .star-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}

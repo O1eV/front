@@ -1,6 +1,7 @@
 import type { Stock } from "../types/market";
 
 // UI 시연용 가상 가격입니다. 실제 시세나 현재 투자 판단을 나타내지 않습니다.
+
 export const sampleStocks: Stock[] = [
   {
     name: "삼성전자",
