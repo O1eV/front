@@ -1,67 +1,86 @@
-# OeV Frontend
+# O1eV Web
 
-React + TypeScript + Vite 기반 프론트엔드입니다.
+React 19 + TypeScript + Vite로 만든 투자 보조 서비스의 UI MVP입니다.
+현재 시세, 차트, AI 확률 및 신호 이력은 모두 샘플 데이터입니다.
 
 ## 실행
 
 ```sh
-npm ci
+npm install
 npm run dev
 ```
 
-## 검증
+## 코드 구조
+
+- `src/App.tsx`: 공통 레이아웃 및 Outlet 상태 제공
+- `src/components/layout/`: 상단 탐색 메뉴, 페이지 제목, 푸터
+- `src/components/market/`: 검색 가능한 종목 목록, 가격 차트, AI 판단, 종목 테이블 및 행
+- `src/components/ui/`: 공용 아이콘, 토스트
+- `src/pages/`: 마켓, 관심 종목·신호 이력, 모의투자, 404 화면
+- `src/hooks/useDashboard.ts`: 선택 종목, 관심 목록, 검색·필터 상태
+- `src/types/market.ts`: 종목, 페이지, 차트 기간, 필터 타입
+- `src/data/markets.ts`: UI 시연용 종목 데이터
+- `src/utils/format.ts`: 숫자 표시 함수
+- `src/styles/`: 디자인 토큰, 레이아웃, 대시보드, 반응형 스타일
+
+## 디자인 기준
+
+현재 화면은 사용자가 제공한 토스증권 스크린샷을 참고합니다.
+밝은 배경, 시장 요약, 종목 정렬 표, 선택 종목 차트, 오른쪽 관심 목록을 구성했습니다.
+상승은 빨강, 하락은 파랑으로 표시하며 AI 판단은 선택 종목 상세에 배치합니다.
+`DESIGN.md`는 이전 Notion 자료로 보존했고 현재 스타일은 `src/styles/toss.css`,
+공통 색상은 `src/styles/tokens.css`에서 관리합니다.
+차트와 확률은 모두 UI 시연용 샘플 데이터입니다.
+
+## 폰트
+
+`pretendard` 패키지의 Pretendard Variable을 앱과 함께 번들링합니다.
+외부 CDN 요청 없이 로드되며 패키지에 SIL OFL 라이선스가 포함되어 있습니다.
+전체 화면은 한 폰트로 통일하고 가격·확률·시각에는 `tabular-nums`를 사용합니다.
+타이포그래피 기준은 `src/styles/typography.css`에서 관리합니다.
+
+## 확인 및 포맷
 
 ```sh
 npm run build
 npm run lint
+npm run format
 npm run format:check
 ```
 
-## 공용 UI 컴포넌트
+관심 목록은 현재 메모리에서 관리하며 새로고침하면 초기화됩니다.
+API 명세 확정 후 샘플 데이터 공급 부분을 실제 API로 연결할 예정입니다.
 
-- `src/components/ui/Icon.tsx`: 이름과 크기로 사용하는 SVG 아이콘. 장식용으로 스크린리더에서 숨깁니다.
+## 라우팅
 
-```tsx
-<Icon name="search" size={20} />
-```
+`react-router-dom`의 BrowserRouter, Routes, Outlet, NavLink를 사용합니다.
 
-이 브랜치의 PR 기준 브랜치는 `feature/ui-foundation`입니다.
+| URL | 화면 |
+| --- | --- |
+| `/` | 마켓 |
+| `/watchlist` | 관심 종목 |
+| `/signals` | 신호 이력 |
+| `/portfolio` | 모의투자 |
+| 그 외 | 404 |
 
-## 공통 레이아웃
+경로 정의는 `src/routes/paths.ts`, 라우트 구성은 `src/routes/AppRoutes.tsx`에 있습니다.
+공통 상태는 App에 유지하고 자식 페이지는 `useDashboardContext`로 접근합니다.
+실제 배포 서버에서는 하위 경로 요청을 `index.html`로 보내는 SPA fallback 설정이 필요합니다.
 
-헤더의 마켓·관심 종목·신호 이력·모의투자 메뉴는 각 경로로 이동하며 활성 메뉴를 표시합니다.
-페이지 제목과 데모 상태, 푸터를 공통으로 사용합니다.
-현재 각 화면은 준비 안내만 표시하며 도메인 화면은 후속 작업입니다.
-정의되지 않은 경로는 404 안내와 홈 링크를 제공합니다.
+## 변수 이름 규칙
 
-이 레이아웃 브랜치의 PR 기준은 `feature/ui-primitives`입니다.
+- `selectedStock`: 선택한 종목
+- `searchQuery`: 검색어
+- `chartPeriod`: 차트 조회 기간
+- `favoriteSymbols`: 관심 종목 종목코드 목록
+- `signalFilter`: AI 신호 필터
+- `filteredStocks`: 검색과 필터를 통과한 종목
+- `buyProbability`: 매수 확률(%)
+- `priceChangePercent`: 가격 등락률(%)
+- `hoveredCandle`: 커서나 방향키로 선택한 캔들과 툴팁 위치
 
-## 종목 데이터와 상태
+샘플 데이터는 `src/data`, 숫자 표시 함수는 `src/utils`, 공통 상태는 `src/hooks`에서 관리합니다.
 
-- `src/types/market.ts`: 종목, 차트 기간, 신호 필터 타입
-- `src/data/markets.ts`: 국내 주식 4종목의 고정 샘플 데이터
-- `src/hooks/useDashboard.ts`: 선택 종목·검색어·관심 종목·차트 기간·신호 필터 관리
-- `src/hooks/useDashboardContext.ts`: 후속 중첩 라우트에서 사용할 Outlet 상태 접근 훅
-- `src/utils/format.ts`: 한국어 로케일 숫자 표시
+## 대상 시장
 
-검색은 종목명 또는 코드로 수행하며 앞뒤 공백과 영문 대소문자를 무시합니다.
-매수 신호 필터는 샘플 매수 확률이 50%를 초과한 종목만 반환합니다.
-상태는 메모리에만 보관하므로 새로고침하면 초기화됩니다.
-이번 브랜치는 데이터와 훅만 추가하며, 실제 화면 연결은 후속 작업입니다.
-PR 기준 브랜치는 `feature/ui-layout`입니다.
-
-### 종목 탐색 화면
-
-마켓과 관심 종목 페이지에서 검색·신호 필터·정렬·선택·관심 등록을 사용할 수 있습니다.
-선택한 종목의 시세는 목록 위에 표시하며, 관심 목록은 페이지 이동 후에도 유지됩니다.
-관심 종목을 모두 해제하거나 검색 결과가 없으면 빈 결과 안내를 표시합니다.
-차트와 AI 상세 분석은 후속 작업입니다.
-
-## 종목 차트와 AI 판단
-
-- 선택 종목에 맞춰 캔들·라인 차트와 AI 예시 확률을 갱신합니다.
-- 1시간·1일·1주·1개월·1년 기간을 선택할 수 있습니다.
-- 차트에 마우스를 올리거나 터치하면 OHLCV 툴팁을 표시합니다.
-- 차트에 키보드로 진입한 뒤 좌우 방향키로 캔들을 탐색하고 Escape로 툴팁을 닫을 수 있습니다.
-- 시세·거래량·AI 확률은 고정 규칙으로 생성한 시연 데이터이며 실제 분석이 아닙니다.
-- PR 기준 브랜치: `feature/market-state`.
+MVP는 국내 주식(코스피·코스닥)을 대상으로 합니다. 종목코드와 시장 구분을 사용하며, 표시 가격과 AI 확률은 실제 시세가 아닌 UI 예시입니다.

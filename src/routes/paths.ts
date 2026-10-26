@@ -9,5 +9,6 @@ export const pagePaths: Record<Page, string> = {
 
 export function getPageFromPath(pathname: string): Page | undefined {
   const normalizedPath = pathname.replace(/\/+$/, "") || "/";
+
   return (Object.keys(pagePaths) as Page[]).find(page => pagePaths[page] === normalizedPath);
 }
