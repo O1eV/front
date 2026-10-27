@@ -1,3 +1,4 @@
+import { RealtimePanel } from '../components/market/RealtimePanel';
 import { MarketOverview } from '../components/market/MarketOverview';
 import { MarketCatalog } from '../components/market/MarketCatalog';
 import { ChartPanel } from '../components/market/ChartPanel';
@@ -42,6 +43,7 @@ export function MarketPage() {
                     </div>
                 </div>
 
+                <RealtimePanel />
                 <MarketCatalog />
             </div>
         </div>

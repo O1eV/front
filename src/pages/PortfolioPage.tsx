@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { ServerPortfolioWorkspace } from '../components/portfolio/ServerPortfolioWorkspace';
 import { useSearchParams } from 'react-router-dom';
 import { useDashboardContext } from '../hooks/useDashboardContext';
 import { usePaperPortfolio } from '../hooks/usePaperPortfolio';
@@ -5,17 +7,42 @@ import { sampleStocks } from '../data/markets';
 import { AccountSummary } from '../components/portfolio/AccountSummary';
 import { HoldingsTable } from '../components/portfolio/HoldingsTable';
 import { PaperOrderForm } from '../components/portfolio/PaperOrderForm';
-import { OrderHistory } from '../components/portfolio/OrderHistory';
+import { LocalOrderHistory } from '../components/portfolio/LocalOrderHistory';
 import { ResetAccount } from '../components/portfolio/ResetAccount';
 import '../styles/trading.css';
 
 export function PortfolioPage() {
+    const [mode, setMode] = useState<'server' | 'local'>('server');
     const [params] = useSearchParams();
     const { selectedStock } = useDashboardContext();
     const initialSymbol =
         sampleStocks.find(stock => stock.symbol === params.get('symbol'))?.symbol ??
         selectedStock.symbol;
-    return <PortfolioWorkspace key={initialSymbol} initialSymbol={initialSymbol} />;
+    return (
+        <>
+            <div className="periods" aria-label="모의투자 방식">
+                <button
+                    className={mode === 'server' ? 'chosen' : ''}
+                    aria-pressed={mode === 'server'}
+                    onClick={() => setMode('server')}
+                >
+                    서버 모의투자
+                </button>
+                <button
+                    className={mode === 'local' ? 'chosen' : ''}
+                    aria-pressed={mode === 'local'}
+                    onClick={() => setMode('local')}
+                >
+                    브라우저 연습
+                </button>
+            </div>
+            {mode === 'server' ? (
+                <ServerPortfolioWorkspace initialSymbol={params.get('symbol') ?? 'KRW-BTC'} />
+            ) : (
+                <PortfolioWorkspace key={initialSymbol} initialSymbol={initialSymbol} />
+            )}
+        </>
+    );
 }
 
 function PortfolioWorkspace({ initialSymbol }: { initialSymbol: string }) {
@@ -39,7 +66,7 @@ function PortfolioWorkspace({ initialSymbol }: { initialSymbol: string }) {
             <div className="paper-grid">
                 <div className="paper-records">
                     <HoldingsTable {...portfolio} />
-                    <OrderHistory {...portfolio} />
+                    <LocalOrderHistory {...portfolio} />
                     <ResetAccount {...portfolio} />
                 </div>
 

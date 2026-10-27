@@ -265,11 +265,11 @@
 }
 
 .trading-page .order-panel form {
-    gap: 10px;
+    gap: 16px;
 }
 
 .trading-page .order-description {
-    margin: 8px 0;
+    margin: 12px 0 20px;
 }
 
 .trading-page .order-details {
@@ -326,4 +326,70 @@
     .paper-grid > .order-panel {
         align-self: stretch;
     }
+}
+
+.order-history-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    padding: 0 24px 20px;
+}
+.order-history-filters label {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+}
+.order-history-filters input,
+.order-history-filters select,
+.order-history-filters button {
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.order-panel fieldset {
+    display: grid;
+    gap: 16px;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+}
+
+.order-panel fieldset > p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.order-panel fieldset > .order-submit {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.server-reset-panel {
+    padding: 20px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+.server-reset-panel h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+.server-reset-panel p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+.server-reset-panel .reset-account p {
+    margin-bottom: 12px;
+}
+.server-reset-panel .reset-account button + button {
+    margin-left: 8px;
+}
+.server-reset-panel > [role='status'] {
+    flex-basis: 100%;
 }

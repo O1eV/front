@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getMyInfo, type MyInfo } from '../api/users';
-import { useAuthSession } from '../lib/auth';
+import { useAuthSession, withdraw } from '../lib/auth';
 import '../styles/my-info.css';
 
 export function MyInfoPage() {
@@ -17,7 +17,7 @@ export function MyInfoPage() {
             </div>
 
             {session ? (
-                <MyInfoDetails key={session.accessToken} token={session.accessToken} />
+                <MyInfoDetails key={session.user.userId} token={session.accessToken} />
             ) : (
                 <p className="my-info-message">
                     로그인 후 내 정보를 확인할 수 있어요. <Link to={'/login'}>로그인</Link>
@@ -116,6 +116,66 @@ function MyInfoDetails({ token }: { token: string }) {
             <p className="my-info-note">
                 이용 통계는 서버 기준이며, 현재 관심 종목·API 키 집계는 준비 중입니다.
             </p>
+            <WithdrawForm />
         </div>
+    );
+}
+
+function WithdrawForm() {
+    const navigate = useNavigate();
+    const [password, setPassword] = useState('');
+    const [confirmed, setConfirmed] = useState(false);
+    const [pending, setPending] = useState(false);
+    const [error, setError] = useState('');
+
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        if (pending || !password || !confirmed) return;
+        setPending(true);
+        setError('');
+        try {
+            await withdraw(password);
+            setPassword('');
+            navigate('/login', { replace: true, state: { withdrawn: true } });
+        } catch (error) {
+            setError(
+                error instanceof Error ? error.message : '회원탈퇴에 실패했어요. 다시 시도해주세요.'
+            );
+        } finally {
+            setPending(false);
+        }
+    }
+
+    return (
+        <form className="withdraw-form" onSubmit={handleSubmit}>
+            <h2>회원탈퇴</h2>
+            <p>
+                탈퇴하면 계정을 다시 이용할 수 없으며 개인정보가 익명화돼요. 거래·약관 동의 등 일부
+                이력은 서버 정책에 따라 보관됩니다.
+            </p>
+            <label htmlFor="withdraw-password">현재 비밀번호</label>
+            <input
+                id="withdraw-password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={event => setPassword(event.target.value)}
+                required
+                disabled={pending}
+            />
+            <label className="withdraw-confirm">
+                <input
+                    type="checkbox"
+                    checked={confirmed}
+                    onChange={event => setConfirmed(event.target.checked)}
+                    disabled={pending}
+                />
+                계정 삭제에 동의합니다.
+            </label>
+            {error && <p role="alert">{error}</p>}
+            <button type="submit" disabled={pending || !password || !confirmed}>
+                {pending ? '탈퇴 처리 중…' : '회원탈퇴'}
+            </button>
+        </form>
     );
 }

@@ -41,7 +41,7 @@ export function Sidebar({ favoriteSymbols, selectedSymbol, onSelectStock }: Side
 
     return (
         <header className="sidebar">
-            <Link className="brand" aria-label="OeV 홈" to={'/'}>
+            <Link className="brand" aria-label="O1eV 홈" to={'/'}>
                 <img src="/logo.png" alt="" width="36" height="36" />
             </Link>
 

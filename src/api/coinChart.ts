@@ -24,7 +24,24 @@ export const chartIntervals: Record<
 };
 
 export function mapCandles(raw: ApiCandle[]): Candle[] {
-    const sorted = raw.toSorted((a, b) => Date.parse(a.time) - Date.parse(b.time));
+    if (!Array.isArray(raw)) throw new Error('캔들 응답을 확인할 수 없어요.');
+    const byTime = new Map<number, ApiCandle>();
+    for (const candle of raw) {
+        const time = Date.parse(candle.time);
+        if (
+            !Number.isFinite(time) ||
+            ![candle.open, candle.high, candle.low, candle.close, candle.volume].every(
+                Number.isFinite
+            ) ||
+            candle.low <= 0 ||
+            candle.volume < 0 ||
+            candle.low > Math.min(candle.open, candle.close) ||
+            candle.high < Math.max(candle.open, candle.close)
+        )
+            throw new Error('캔들 응답을 확인할 수 없어요.');
+        byTime.set(time, candle);
+    }
+    const sorted = [...byTime.values()].sort((a, b) => Date.parse(a.time) - Date.parse(b.time));
 
     return sorted.map((candle, index) => ({
         timestamp: Date.parse(candle.time),
@@ -53,8 +70,14 @@ async function findCoinMarket(symbol: string, signal: AbortSignal) {
     }
 }
 
-export async function getCoinChart(symbol: string, period: ChartPeriod, signal: AbortSignal) {
-    const { interval, limit } = chartIntervals[period];
+export async function getCoinChart(
+    symbol: string,
+    period: ChartPeriod,
+    signal: AbortSignal,
+    selectedInterval?: string
+) {
+    const { interval: defaultInterval, limit } = chartIntervals[period];
+    const interval = selectedInterval ?? defaultInterval;
     const params = new URLSearchParams({ interval, limit: String(limit) });
     const [ticker, result] = await Promise.all([
         findCoinMarket(symbol, signal),
@@ -63,6 +86,8 @@ export async function getCoinChart(symbol: string, period: ChartPeriod, signal: 
             { signal }
         ),
     ]);
+    if (result.symbol !== symbol || result.interval !== interval)
+        throw new Error('요청한 종목의 캔들 응답이 아니에요.');
     const candles = mapCandles(result.candles);
 
     if (!ticker || !candles.length) throw new Error('표시할 시세 데이터가 없어요.');

@@ -1,13 +1,22 @@
-import { useCollectedPrice } from '../hooks/useCollectedPrice';
+import { LatestSignalPanel } from '../components/market/LatestSignalPanel';
+import { RealtimePanel } from '../components/market/RealtimePanel';
 import { Icon } from '../components/ui/Icon';
 import { useDashboardContext } from '../hooks/useDashboardContext';
 import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { coinMarkets } from '../api/upbit';
 import { chartIntervals, getCoinChart } from '../api/coinChart';
-import { PriceChart } from '../components/market/PriceChart';
+import type { CandleInterval } from '../components/market/LiveCandleChart';
+import type { LatestSignal } from '../api/signals';
+import { useAuthSession } from '../lib/auth';
 import { PERIODS, type ChartPeriod, type Stock } from '../types/market';
 import { formatNumber } from '../utils/format';
+
+const LiveCandleChart = lazy(() =>
+    import('../components/market/LiveCandleChart').then(module => ({
+        default: module.LiveCandleChart,
+    }))
+);
 
 type ChartData = Awaited<ReturnType<typeof getCoinChart>>;
 
@@ -21,14 +30,18 @@ export function CryptoPage() {
 function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
     const dashboard = useDashboardContext();
     const [symbol, setSymbol] = useState(initialSymbol);
-    const collected = useCollectedPrice(symbol);
+    const [params, setParams] = useSearchParams();
+    const realtime = dashboard.realtime;
     const [period, setPeriod] = useState<ChartPeriod>('1일');
+    const [interval, setInterval] = useState<CandleInterval>('15m');
+    const [latestSignal, setLatestSignal] = useState<LatestSignal>();
+    const session = useAuthSession();
     const [retry, setRetry] = useState(0);
     const [state, setState] = useState<{ key: string; data?: ChartData; error?: string }>({
         key: '',
     });
 
-    const key = `${symbol}:${period}`;
+    const key = `${symbol}:${period}:${interval}`;
 
     useEffect(() => {
         const controller = new AbortController();
@@ -39,15 +52,20 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
                 const data = await getCoinChart(
                     symbol,
                     period,
-                    AbortSignal.any([controller.signal, AbortSignal.timeout(12_000)])
+                    AbortSignal.any([controller.signal, AbortSignal.timeout(12_000)]),
+                    interval
                 );
 
-                if (!controller.signal.aborted) setState({ key: `${symbol}:${period}`, data });
+                if (!controller.signal.aborted)
+                    setState({ key: `${symbol}:${period}:${interval}`, data });
             } catch (error) {
                 if (!controller.signal.aborted)
                     setState(previous => ({
-                        key: `${symbol}:${period}`,
-                        data: previous.key === `${symbol}:${period}` ? previous.data : undefined,
+                        key: `${symbol}:${period}:${interval}`,
+                        data:
+                            previous.key === `${symbol}:${period}:${interval}`
+                                ? previous.data
+                                : undefined,
                         error: error instanceof Error ? error.message : '시세 연결을 확인해주세요.',
                     }));
             } finally {
@@ -62,11 +80,14 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
 
             clearTimeout(timer);
         };
-    }, [symbol, period, retry]);
+    }, [symbol, period, interval, retry]);
 
     const data = state.key === key ? state.data : undefined;
     const coin = coinMarkets.find(coin => coin.symbol === symbol)!;
-    const live = collected?.data && !collected.data.stale ? collected.data : undefined;
+    const live =
+        realtime?.status === 'connected' && realtime.price?.symbol === symbol
+            ? { ...realtime.price, updatedAt: realtime.price.time }
+            : undefined;
     const previousClose = data ? data.ticker.price / (1 + data.ticker.changeRate) : undefined;
     const currentPrice = live?.price ?? data?.ticker.price;
     const currentChangeRate =
@@ -88,19 +109,12 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
             <div className="section-heading">
                 <div>
                     <h1>코인 시세</h1>
-                    <p>수집 현재가 1초 · 원화 마켓 · 차트 20초 갱신</p>
+                    <p>실시간 WebSocket 시세 · 원화 마켓 · 차트 20초 갱신</p>
                 </div>
             </div>
 
-            <p className="crypto-source" role="status">
-                {live
-                    ? `수집 시세 연결됨 · ${new Date(live.updatedAt).toLocaleTimeString('ko-KR')}`
-                    : collected?.error
-                      ? `${collected.error} 기존 API 시세를 표시합니다.`
-                      : collected?.data?.stale
-                        ? '수집 시세 갱신이 지연되어 기존 API 시세를 표시합니다.'
-                        : '수집 시세 연결 중…'}
-            </p>
+            <RealtimePanel />
+            <LatestSignalPanel key={symbol} symbol={symbol} onLatest={setLatestSignal} />
 
             <div className="periods" aria-label="코인 선택">
                 {coinMarkets.map(coin => (
@@ -108,7 +122,12 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
                         key={coin.symbol}
                         className={symbol === coin.symbol ? 'chosen' : ''}
                         aria-pressed={symbol === coin.symbol}
-                        onClick={() => setSymbol(coin.symbol)}
+                        onClick={() => {
+                            setSymbol(coin.symbol);
+                            const next = new URLSearchParams(params);
+                            next.set('symbol', coin.symbol);
+                            setParams(next);
+                        }}
                     >
                         {coin.name}
                     </button>
@@ -121,9 +140,29 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
                         key={value}
                         className={period === value ? 'chosen' : ''}
                         aria-pressed={period === value}
-                        onClick={() => setPeriod(value)}
+                        onClick={() => {
+                            setPeriod(value);
+                            setInterval(chartIntervals[value].interval as CandleInterval);
+                        }}
                     >
                         {value}
+                    </button>
+                ))}
+            </div>
+
+            <div className="periods" aria-label="봉 단위">
+                {(['1m', '5m', '15m', '1h', '1d'] as const).map(value => (
+                    <button
+                        key={value}
+                        className={interval === value ? 'chosen' : ''}
+                        aria-pressed={interval === value}
+                        onClick={() => setInterval(value)}
+                    >
+                        {
+                            { '1m': '1분', '5m': '5분', '15m': '15분', '1h': '1시간', '1d': '1일' }[
+                                value
+                            ]
+                        }
                     </button>
                 ))}
             </div>
@@ -172,12 +211,24 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
                         </div>
                     </div>
 
-                    <PriceChart
-                        key={key}
-                        stock={stock}
-                        chartPeriod={period}
-                        liveCandles={data.candles}
-                    />
+                    <Suspense fallback={<p role="status">차트를 준비하는 중…</p>}>
+                        <LiveCandleChart
+                            key={key}
+                            candles={data.candles}
+                            interval={interval}
+                            tick={realtime?.price}
+                            signal={
+                                session
+                                    ? realtime?.signal &&
+                                      (!latestSignal ||
+                                          Date.parse(realtime.signal.generatedAt) >=
+                                              Date.parse(latestSignal.generatedAt))
+                                        ? realtime.signal
+                                        : latestSignal
+                                    : undefined
+                            }
+                        />
+                    </Suspense>
 
                     <div className="chart-stats">
                         <div>
@@ -199,8 +250,7 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
                     <p className="crypto-source">
                         서버 API 시세 · 마지막 조회{' '}
                         {new Date(data.updatedAt).toLocaleTimeString('ko-KR')}{' '}
-                        {state.error ? '· 갱신 실패, 이전 조회 데이터' : ''} ·{' '}
-                        {chartIntervals[period].label}
+                        {state.error ? '· 갱신 실패, 이전 조회 데이터' : ''} · {interval}
                     </p>
                 </>
             )}

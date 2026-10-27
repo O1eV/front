@@ -44,3 +44,44 @@
         padding: 16px;
     }
 }
+
+.withdraw-form {
+    display: grid;
+    gap: 14px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--hairline);
+}
+.withdraw-form h2 {
+    margin: 0;
+}
+.withdraw-form p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+.withdraw-form input[type='password'] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+}
+.withdraw-confirm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.withdraw-form button {
+    justify-self: start;
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: #d52b3a;
+    color: white;
+}
+.withdraw-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.withdraw-form [role='alert'] {
+    color: #d52b3a;
+}

@@ -1,5 +1,6 @@
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
+import { useRealtime } from './useRealtime';
 import { useWatchlist } from './useWatchlist';
 import { sampleStocks } from '../data/markets';
 import type { Stock, MarketFilter, ChartPeriod } from '../types/market';
@@ -28,6 +29,11 @@ export function useDashboard() {
 
     const watchlist = useWatchlist(setToastMessage);
 
+    const realtimeSymbol = ['KRW-BTC', 'KRW-ETH', 'KRW-XRP'].includes(params.get('symbol') ?? '')
+        ? params.get('symbol')!
+        : 'KRW-BTC';
+    const realtime = useRealtime(realtimeSymbol, pathname === '/' || pathname === '/crypto');
+
     const normalizedSearchQuery = searchQuery.trim().toLowerCase();
 
     const filteredStocks = sampleStocks.filter(stock => {
@@ -41,6 +47,7 @@ export function useDashboard() {
     });
 
     return {
+        realtime,
         selectedStock,
         setSelectedStock,
         searchQuery,

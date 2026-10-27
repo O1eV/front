@@ -25,7 +25,7 @@ globalThis.setTimeout = (...args) => realTimeout(...args).unref();
 
 const { apiClient } = await import(clientUrl);
 const { registerUser, loginUser } = await import(apiUrl);
-const { login, logout, useAuthSession } = await import(authUrl);
+const { login, logout, withdraw, useAuthSession } = await import(authUrl);
 const ok = data => new Response(JSON.stringify({ data }));
 const unauthorized = () => new Response(JSON.stringify({ message: "인증 만료", error: "TOKEN_EXPIRED" }), { status: 401 });
 let refreshCount = 0;
@@ -163,3 +163,29 @@ assert.equal(useAuthSession().accessToken, 'restored');
 assert.equal(useAuthSession().user.nickname, '복원된 사용자');
 assert.equal(storage.size, 0);
 console.log('PASS: TOKEN_EXPIRED 한정 재발급·초기 복원 중복 방지·프로필 복원·메모리 전용 보관');
+
+// 회원탈퇴는 잘못된 비밀번호일 때 세션을 유지하고 성공한 뒤에만 정리한다.
+let withdrawalFails = true;
+let withdrawalExpired = false;
+let withdrawalAttempts = 0;
+globalThis.fetch = async (path, options) => {
+  if (path.endsWith("/login")) return ok({ accessToken: "withdraw-old", expiresIn: 1800, user: { userId: "withdraw-user" } });
+  if (path.endsWith("/refresh")) return ok({ accessToken: "withdraw-new", expiresIn: 1800 });
+  assert.equal(path, "/api/users/me");
+  assert.equal(options.method, "DELETE");
+  assert.equal(options.credentials, "include");
+  assert.deepEqual(JSON.parse(options.body), { password: "current-password" });
+  withdrawalAttempts++;
+  if (withdrawalFails) return new Response(JSON.stringify({ message: "비밀번호가 일치하지 않습니다.", error: "INVALID_CREDENTIALS" }), { status: 401 });
+  if (withdrawalExpired && options.headers.Authorization === "Bearer withdraw-old") return unauthorized();
+  return ok(null);
+};
+await login("withdraw@test.com", "current-password");
+await assert.rejects(withdraw("current-password"), /비밀번호가 일치하지 않습니다/);
+assert.equal(useAuthSession().accessToken, "withdraw-old");
+withdrawalFails = false;
+withdrawalExpired = true;
+await withdraw("current-password");
+assert.equal(withdrawalAttempts, 3);
+assert.equal(useAuthSession(), null);
+console.log("PASS: 회원탈퇴 DELETE·비밀번호 전달·오류 시 세션 유지·만료 토큰 재시도·성공 시 세션 삭제");

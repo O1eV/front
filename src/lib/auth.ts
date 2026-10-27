@@ -139,7 +139,22 @@ export async function login(email: string, password: string, rememberMe = false)
     saveSession({ ...result, expiresAt: Date.now() + result.expiresIn * 1000 });
 }
 
-export async function logout() {
+export function logout() {
+    return endSession(logoutUser);
+}
+
+export function withdraw(password: string) {
+    return endSession(token =>
+        apiClient<null>('users/me', {
+            method: 'DELETE',
+            body: { password },
+            token,
+            skipRefresh: true,
+        })
+    );
+}
+
+async function endSession(action: (token: string) => Promise<unknown>) {
     if (!session || loggingOut) return;
 
     loggingOut = true;
@@ -154,7 +169,7 @@ export async function logout() {
         let endingSession = previous;
 
         try {
-            await logoutUser(previous.accessToken);
+            await action(previous.accessToken);
         } catch (error) {
             if (
                 !(error instanceof ApiError) ||
@@ -168,7 +183,7 @@ export async function logout() {
 
             if (!session || session.accessToken !== token) throw error;
             endingSession = session;
-            await logoutUser(token);
+            await action(token);
         }
 
         if (session === endingSession) saveSession(null);
@@ -176,4 +191,8 @@ export async function logout() {
         loggingOut = false;
         scheduleRefresh();
     }
+}
+
+export function refreshAccessToken() {
+    return refreshSession();
 }

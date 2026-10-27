@@ -1,4 +1,4 @@
-# OeV Web
+# O1eV Web
 
 React 19 + TypeScript + Vite로 만든 투자 보조 서비스의 UI MVP입니다.
 현재 시세, 차트, AI 확률 및 신호 이력은 모두 샘플 데이터입니다.
@@ -92,3 +92,5 @@ MVP는 국내 주식(코스피·코스닥)을 대상으로 합니다. 종목코�
 운영 웹 서버는 `/api`를 Spring Boot로 중계하거나 `VITE_API_BASE_URL`을 설정해야 합니다.
 브라우저 연습 모드는 화면 안내대로 샘플 가격을 사용합니다.
 `AbortSignal.any`와 `AbortSignal.timeout`을 지원하는 브라우저가 필요합니다.
+
+실시간 인증 갱신에 실패하면 자동 재접속을 중단합니다. 다시 로그인하면 새 세션으로 연결합니다.

@@ -1,5 +1,5 @@
 {
-  "name": "OeV",
+  "name": "O1eV",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,6 +12,8 @@
     "format:check": "prettier --check src"
   },
   "dependencies": {
+    "@stomp/stompjs": "^7.5.0",
+    "lightweight-charts": "^5.2.1",
     "pretendard": "^1.3.9",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

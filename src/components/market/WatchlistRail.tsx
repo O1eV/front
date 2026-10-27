@@ -25,7 +25,7 @@ export function WatchlistRail({
             </div>
 
             <Link className="rail-ai-link" to={'/'}>
-                ✦ OeV AI <span>종목별 판단 확인하기 ›</span>
+                ✦ O1eV AI <span>종목별 판단 확인하기 ›</span>
             </Link>
 
             <div className="rail-list-title">

@@ -13,7 +13,11 @@ export function AuthPage({ mode }: AuthPageProps) {
     const isSignup = mode === 'signup';
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState(
-        location.state?.registered ? '회원가입이 완료됐어요. 로그인해주세요.' : ''
+        location.state?.registered
+            ? '회원가입이 완료됐어요. 로그인해주세요.'
+            : location.state?.withdrawn
+              ? '회원탈퇴가 완료됐어요.'
+              : ''
     );
 
     const [passwordError, setPasswordError] = useState('');
@@ -74,9 +78,9 @@ export function AuthPage({ mode }: AuthPageProps) {
     return (
         <div className="auth-page">
             <header className="auth-header">
-                <Link className="auth-brand" aria-label="OeV 홈" to={'/'}>
+                <Link className="auth-brand" aria-label="O1eV 홈" to={'/'}>
                     <img src="/logo.png" alt="" width="36" height="36" />
-                    <span>OeV</span>
+                    <span>O1eV</span>
                 </Link>
 
                 <Link className="auth-home" aria-label="닫고 마켓으로 돌아가기" to={'/'}>
@@ -86,7 +90,7 @@ export function AuthPage({ mode }: AuthPageProps) {
 
             <main className="auth-main">
                 <div className="auth-intro">
-                    <h1 id="auth-title">{isSignup ? 'OeV 회원가입' : 'OeV 로그인'}</h1>
+                    <h1 id="auth-title">{isSignup ? 'O1eV 회원가입' : 'O1eV 로그인'}</h1>
                     <p>
                         {isSignup
                             ? '나만의 투자 흐름을 만들어보세요'
