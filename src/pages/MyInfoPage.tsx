@@ -1,120 +1,121 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getMyInfo, type MyInfo } from "../api/users";
-import { useAuthSession } from "../lib/auth";
-import "../styles/my-info.css";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getMyInfo, type MyInfo } from '../api/users';
+import { useAuthSession } from '../lib/auth';
+import '../styles/my-info.css';
 
 export function MyInfoPage() {
-  const session = useAuthSession();
+    const session = useAuthSession();
 
-  return (
-    <section className="panel my-info-page">
-      <div className="section-heading">
-        <div>
-          <h1>내 정보</h1>
-          <p>프로필과 서비스 이용 정보를 확인하세요.</p>
-        </div>
-      </div>
+    return (
+        <section className="panel my-info-page">
+            <div className="section-heading">
+                <div>
+                    <h1>내 정보</h1>
+                    <p>프로필과 서비스 이용 정보를 확인하세요.</p>
+                </div>
+            </div>
 
-      {session ? (
-        <MyInfoDetails key={session.accessToken} token={session.accessToken} />
-      ) : (
-        <p className="my-info-message">
-          로그인 후 내 정보를 확인할 수 있어요. <Link to={"/login"}>로그인</Link>
-        </p>
-      )}
-    </section>
-  );
+            {session ? (
+                <MyInfoDetails key={session.accessToken} token={session.accessToken} />
+            ) : (
+                <p className="my-info-message">
+                    로그인 후 내 정보를 확인할 수 있어요. <Link to={'/login'}>로그인</Link>
+                </p>
+            )}
+        </section>
+    );
 }
 
 function MyInfoDetails({ token }: { token: string }) {
-  const [retry, setRetry] = useState(0);
-  const [state, setState] = useState<{ data?: MyInfo; error?: string }>();
+    const [retry, setRetry] = useState(0);
+    const [state, setState] = useState<{ data?: MyInfo; error?: string }>();
 
-  useEffect(() => {
-    const controller = new AbortController();
+    useEffect(() => {
+        const controller = new AbortController();
 
-    getMyInfo(token, controller.signal)
-      .then(data => {
-        if (!controller.signal.aborted) setState({ data });
-      })
-      .catch((error: unknown) => {
-        if (!controller.signal.aborted)
-          setState({
-            error: error instanceof Error ? error.message : "내 정보를 불러오지 못했어요.",
-          });
-      });
+        getMyInfo(token, controller.signal)
+            .then(data => {
+                if (!controller.signal.aborted) setState({ data });
+            })
+            .catch((error: unknown) => {
+                if (!controller.signal.aborted)
+                    setState({
+                        error:
+                            error instanceof Error ? error.message : '내 정보를 불러오지 못했어요.',
+                    });
+            });
 
-    return () => controller.abort();
-  }, [token, retry]);
+        return () => controller.abort();
+    }, [token, retry]);
 
-  if (!state)
+    if (!state)
+        return (
+            <p className="my-info-message" role="status">
+                내 정보를 불러오는 중…
+            </p>
+        );
+
+    if (state.error)
+        return (
+            <div className="my-info-message" role="alert">
+                <p>{state.error}</p>
+                <button
+                    type="button"
+                    onClick={() => {
+                        setState(undefined);
+                        setRetry(value => value + 1);
+                    }}
+                >
+                    다시 시도
+                </button>{' '}
+                <Link to={'/login'}>다시 로그인</Link>
+            </div>
+        );
+
+    if (!state.data) return null;
+
+    const { user, stats } = state.data;
+
     return (
-      <p className="my-info-message" role="status">
-        내 정보를 불러오는 중…
-      </p>
+        <div className="my-info-body">
+            <h2>프로필</h2>
+            <dl className="my-info-fields">
+                <div>
+                    <dt>닉네임</dt>
+                    <dd>{user.nickname}</dd>
+                </div>
+                <div>
+                    <dt>이메일</dt>
+                    <dd>{user.email}</dd>
+                </div>
+                <div>
+                    <dt>가입일</dt>
+                    <dd>
+                        {new Date(user.createdAt).toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            timeZone: 'Asia/Seoul',
+                        })}
+                    </dd>
+                </div>
+            </dl>
+
+            <h2>서비스 이용 정보</h2>
+            <dl className="my-info-fields">
+                <div>
+                    <dt>관심 종목</dt>
+                    <dd>{stats.watchlistCount.toLocaleString('ko-KR')}개</dd>
+                </div>
+                <div>
+                    <dt>활성 API 키</dt>
+                    <dd>{stats.activeApiKeyCount.toLocaleString('ko-KR')}개</dd>
+                </div>
+            </dl>
+            <p className="my-info-note">
+                이용 통계는 서버 기준이며, 현재 관심 종목·API 키 집계는 준비 중입니다.
+            </p>
+        </div>
     );
-
-  if (state.error)
-    return (
-      <div className="my-info-message" role="alert">
-        <p>{state.error}</p>
-        <button
-          type="button"
-          onClick={() => {
-            setState(undefined);
-            setRetry(value => value + 1);
-          }}
-        >
-          다시 시도
-        </button>{" "}
-        <Link to={"/login"}>다시 로그인</Link>
-      </div>
-    );
-
-  if (!state.data) return null;
-
-  const { user, stats } = state.data;
-
-  return (
-    <div className="my-info-body">
-      <h2>프로필</h2>
-      <dl className="my-info-fields">
-        <div>
-          <dt>닉네임</dt>
-          <dd>{user.nickname}</dd>
-        </div>
-        <div>
-          <dt>이메일</dt>
-          <dd>{user.email}</dd>
-        </div>
-        <div>
-          <dt>가입일</dt>
-          <dd>
-            {new Date(user.createdAt).toLocaleDateString("ko-KR", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              timeZone: "Asia/Seoul",
-            })}
-          </dd>
-        </div>
-      </dl>
-
-      <h2>서비스 이용 정보</h2>
-      <dl className="my-info-fields">
-        <div>
-          <dt>관심 종목</dt>
-          <dd>{stats.watchlistCount.toLocaleString("ko-KR")}개</dd>
-        </div>
-        <div>
-          <dt>활성 API 키</dt>
-          <dd>{stats.activeApiKeyCount.toLocaleString("ko-KR")}개</dd>
-        </div>
-      </dl>
-      <p className="my-info-note">
-        이용 통계는 서버 기준이며, 현재 관심 종목·API 키 집계는 준비 중입니다.
-      </p>
-    </div>
-  );
 }

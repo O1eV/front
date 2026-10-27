@@ -1,38 +1,38 @@
 /* One UI family, with size and weight defining hierarchy. */
 body {
-  font-family: var(--font-ui);
+    font-family: var(--font-ui);
 }
 
 .price-heading,
 .signal-summary > strong {
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .probability-label strong {
-  width: auto;
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.2;
+    width: auto;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
 }
 
 .probability-label strong small {
-  font-size: 14px;
-  font-weight: 400;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 h1 {
-  font-size: 20px;
-  font-weight: 600;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .stock-heading h2,
 .ai-heading h2,
 .section-heading h2,
 .signal-log-heading h2 {
-  font-size: 18px;
-  font-weight: 600;
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .nav-item,
@@ -40,24 +40,24 @@ h1 {
 .chart-mode button,
 .table-tabs > button,
 .primary {
-  font-size: 14px;
-  font-weight: 500;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .periods button,
 .chart-mode button {
-  min-height: 36px;
+    min-height: 36px;
 }
 
 .market-search input,
 .search input,
 .market-option-title strong,
 .market-option-price strong {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .market-option-title strong {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .signal-summary p,
@@ -65,8 +65,8 @@ h1 {
 .analysis-metadata > div,
 .ai-note,
 .section-heading p {
-  font-size: 14px;
-  font-weight: 400;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 .market-option small,
@@ -88,12 +88,12 @@ h1 {
 .table-info,
 .table-footer,
 footer {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 .signal-log td,
 .signal-log .signal-pill {
-  font-size: 13px;
+    font-size: 13px;
 }
 
 .price-heading,
@@ -106,76 +106,76 @@ footer {
 .signal-log td,
 .log-time,
 .chart-x {
-  font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums;
 }
 
 .log-time,
 .probability-label strong {
-  font-family: inherit;
+    font-family: inherit;
 }
 
 @media (max-width: 700px) {
-  .price-heading {
-    font-size: 28px;
-  }
+    .price-heading {
+        font-size: 28px;
+    }
 
-  .nav-item {
-    font-size: 13px;
-  }
+    .nav-item {
+        font-size: 13px;
+    }
 
-  .chart-stats,
-  .chart-stats strong {
-    font-size: 12px;
-  }
+    .chart-stats,
+    .chart-stats strong {
+        font-size: 12px;
+    }
 
-  .trading-workspace .chart-panel {
-    min-height: 500px;
-  }
+    .trading-workspace .chart-panel {
+        min-height: 500px;
+    }
 
-  footer {
-    flex-wrap: wrap;
-    font-size: 12px;
-  }
+    footer {
+        flex-wrap: wrap;
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 480px) {
-  .sidebar {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: 56px;
-  }
+    .sidebar {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 56px;
+    }
 
-  .sidebar nav {
-    order: 3;
-    width: 100%;
-    flex-basis: 100%;
-    height: 44px;
-  }
+    .sidebar nav {
+        order: 3;
+        width: 100%;
+        flex-basis: 100%;
+        height: 44px;
+    }
 
-  .sidebar .brand {
-    margin: 12px 0;
-  }
+    .sidebar .brand {
+        margin: 12px 0;
+    }
 
-  .nav-item {
-    flex: 1;
-    justify-content: center;
-    font-size: 13px;
-  }
+    .nav-item {
+        flex: 1;
+        justify-content: center;
+        font-size: 13px;
+    }
 
-  .page-heading {
-    flex-wrap: wrap;
-  }
+    .page-heading {
+        flex-wrap: wrap;
+    }
 
-  .chart-stats {
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 14px;
-  }
+    .chart-stats {
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 14px;
+    }
 
-  .chart-tools {
-    flex-wrap: wrap;
-  }
+    .chart-tools {
+        flex-wrap: wrap;
+    }
 
-  .market-option {
-    min-width: 150px;
-  }
+    .market-option {
+        min-width: 150px;
+    }
 }

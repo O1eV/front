@@ -1,7 +1,7 @@
-@import "./styles/layout.css";
-@import "./styles/dashboard.css";
-@import "./styles/responsive.css";
+@import './styles/layout.css';
+@import './styles/dashboard.css';
+@import './styles/responsive.css';
 
-@import "./styles/typography.css";
+@import './styles/typography.css';
 
-@import "./styles/toss.css";
+@import './styles/toss.css';

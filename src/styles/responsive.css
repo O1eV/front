@@ -1,328 +1,328 @@
 @media (max-width: 1200px) {
-  .trading-workspace {
-    grid-template-columns: 180px minmax(0, 1fr) 230px;
-  }
+    .trading-workspace {
+        grid-template-columns: 180px minmax(0, 1fr) 230px;
+    }
 
-  .trading-workspace .chart-panel {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
+    .trading-workspace .chart-panel {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 
-  .price-heading {
-    font-size: 28px;
-  }
+    .price-heading {
+        font-size: 28px;
+    }
 
-  .price-heading > span {
-    display: block;
-    margin: 8px 0 0;
-  }
+    .price-heading > span {
+        display: block;
+        margin: 8px 0 0;
+    }
 
-  .stock-heading h2 small {
-    display: none;
-  }
+    .stock-heading h2 small {
+        display: none;
+    }
 
-  .table-scroll table {
-    min-width: 750px;
-  }
+    .table-scroll table {
+        min-width: 750px;
+    }
 }
 
 @media (max-width: 1000px) {
-  .trading-workspace {
-    grid-template-columns: 180px minmax(0, 1fr);
-  }
+    .trading-workspace {
+        grid-template-columns: 180px minmax(0, 1fr);
+    }
 
-  .trading-workspace .ai-panel {
-    grid-column: 1/-1;
-    border-left: 0;
-    border-top: 1px solid var(--hairline);
-    display: grid;
-    grid-template-columns: 1fr 1.3fr;
-    gap: 0 40px;
-  }
+    .trading-workspace .ai-panel {
+        grid-column: 1/-1;
+        border-left: 0;
+        border-top: 1px solid var(--hairline);
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 0 40px;
+    }
 
-  .ai-heading {
-    grid-column: 1/-1;
-  }
+    .ai-heading {
+        grid-column: 1/-1;
+    }
 
-  .signal-summary {
-    padding-top: 24px;
-  }
+    .signal-summary {
+        padding-top: 24px;
+    }
 
-  .probabilities {
-    grid-column: 2;
-    grid-row: 2/4;
-    margin: 0;
-  }
+    .probabilities {
+        grid-column: 2;
+        grid-row: 2/4;
+        margin: 0;
+    }
 
-  .analysis-metadata {
-    border: 0;
-    grid-column: 1;
-  }
+    .analysis-metadata {
+        border: 0;
+        grid-column: 1;
+    }
 
-  .ai-note {
-    grid-column: 1/-1;
-    margin-top: 12px;
-  }
+    .ai-note {
+        grid-column: 1/-1;
+        margin-top: 12px;
+    }
 
-  .trading-workspace .chart-wrap > svg {
-    height: 270px;
-  }
+    .trading-workspace .chart-wrap > svg {
+        height: 270px;
+    }
 
-  .section-heading {
-    align-items: flex-start;
-    flex-direction: column;
-  }
+    .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 
-  .search {
-    width: 100%;
-  }
+    .search {
+        width: 100%;
+    }
 }
 
 @media (max-width: 700px) {
-  .sidebar {
-    padding: 0 20px;
-    gap: 16px;
-    height: 60px;
-  }
+    .sidebar {
+        padding: 0 20px;
+        gap: 16px;
+        height: 60px;
+    }
 
-  .sidebar nav {
-    gap: 0;
-    flex: 1;
-    justify-content: center;
-  }
+    .sidebar nav {
+        gap: 0;
+        flex: 1;
+        justify-content: center;
+    }
 
-  .nav-item {
-    font-size: 12px;
-    padding: 0 10px;
-    white-space: nowrap;
-  }
+    .nav-item {
+        font-size: 12px;
+        padding: 0 10px;
+        white-space: nowrap;
+    }
 
-  .nav-item.active::after {
-    left: 10px;
-    right: 10px;
-  }
+    .nav-item.active::after {
+        left: 10px;
+        right: 10px;
+    }
 
-  .brand {
-    font-size: 25px;
-  }
+    .brand {
+        font-size: 25px;
+    }
 
-  .avatar {
-    display: none;
-  }
+    .avatar {
+        display: none;
+    }
 
-  main {
-    padding: 24px 20px 0;
-  }
+    main {
+        padding: 24px 20px 0;
+    }
 
-  .trading-workspace {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
+    .trading-workspace {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
 
-  .market-selector {
-    border: 0;
-    border-bottom: 1px solid var(--hairline);
-  }
+    .market-selector {
+        border: 0;
+        border-bottom: 1px solid var(--hairline);
+    }
 
-  .market-search {
-    margin: 12px;
-  }
+    .market-search {
+        margin: 12px;
+    }
 
-  .market-list-heading,
-  .market-source {
-    display: none;
-  }
+    .market-list-heading,
+    .market-source {
+        display: none;
+    }
 
-  .market-list {
-    display: flex;
-    overflow: auto;
-  }
+    .market-list {
+        display: flex;
+        overflow: auto;
+    }
 
-  .market-option {
-    flex-direction: column;
-    align-items: flex-start;
-    min-width: 130px;
-    padding: 12px 16px;
-    border-left: 0;
-    border-bottom: 2px solid transparent;
-    border-top: 0;
-  }
+    .market-option {
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 130px;
+        padding: 12px 16px;
+        border-left: 0;
+        border-bottom: 2px solid transparent;
+        border-top: 0;
+    }
 
-  .market-option.selected {
-    border-bottom-color: var(--ink-soft);
-  }
+    .market-option.selected {
+        border-bottom-color: var(--ink-soft);
+    }
 
-  .market-option-title {
-    display: flex;
-    align-items: baseline;
-    gap: 7px;
-  }
+    .market-option-title {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+    }
 
-  .market-option-title small {
-    margin: 0;
-  }
+    .market-option-title small {
+        margin: 0;
+    }
 
-  .market-option-price {
-    text-align: left;
-  }
+    .market-option-price {
+        text-align: left;
+    }
 
-  .market-option-price small {
-    display: inline;
-    margin-left: 8px;
-  }
+    .market-option-price small {
+        display: inline;
+        margin-left: 8px;
+    }
 
-  .market-option-price strong {
-    display: inline;
-  }
+    .market-option-price strong {
+        display: inline;
+    }
 
-  .trading-workspace .chart-panel {
-    padding: 20px 16px 0;
-  }
+    .trading-workspace .chart-panel {
+        padding: 20px 16px 0;
+    }
 
-  .chart-header {
-    justify-content: flex-start;
-  }
+    .chart-header {
+        justify-content: flex-start;
+    }
 
-  .stock-heading h2 {
-    font-size: 18px;
-  }
+    .stock-heading h2 {
+        font-size: 18px;
+    }
 
-  .price-heading {
-    font-size: 28px;
-    margin: 16px 0;
-  }
+    .price-heading {
+        font-size: 28px;
+        margin: 16px 0;
+    }
 
-  .price-heading > span {
-    display: inline-block;
-    margin-left: 10px;
-  }
+    .price-heading > span {
+        display: inline-block;
+        margin-left: 10px;
+    }
 
-  .periods {
-    gap: 0;
-  }
+    .periods {
+        gap: 0;
+    }
 
-  .periods button {
-    padding: 8px 10px;
-  }
+    .periods button {
+        padding: 8px 10px;
+    }
 
-  .trading-workspace .chart-wrap > svg {
-    height: 240px;
-  }
+    .trading-workspace .chart-wrap > svg {
+        height: 240px;
+    }
 
-  .chart-stats {
-    font-size: 10px;
-    gap: 8px;
-  }
+    .chart-stats {
+        font-size: 10px;
+        gap: 8px;
+    }
 
-  .chart-stats strong {
-    font-size: 11px;
-  }
+    .chart-stats strong {
+        font-size: 11px;
+    }
 
-  .trading-workspace .ai-panel {
-    padding: 20px;
-    gap: 0 24px;
-  }
+    .trading-workspace .ai-panel {
+        padding: 20px;
+        gap: 0 24px;
+    }
 
-  .table-footer {
-    padding: 12px 20px;
-    font-size: 10px;
-  }
+    .table-footer {
+        padding: 12px 20px;
+        font-size: 10px;
+    }
 
-  .table-footer button {
-    white-space: nowrap;
-    font-size: 11px;
-  }
+    .table-footer button {
+        white-space: nowrap;
+        font-size: 11px;
+    }
 
-  .section-heading {
-    padding: 20px;
-  }
+    .section-heading {
+        padding: 20px;
+    }
 
-  .section-heading h2 {
-    font-size: 20px;
-  }
+    .section-heading h2 {
+        font-size: 20px;
+    }
 
-  .section-heading p {
-    font-size: 12px;
-  }
+    .section-heading p {
+        font-size: 12px;
+    }
 
-  .table-tabs {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
+    .table-tabs {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 
-  .table-info {
-    font-size: 10px;
-  }
+    .table-info {
+        font-size: 10px;
+    }
 
-  .toast {
-    width: calc(100% - 40px);
-    font-size: 12px;
-  }
+    .toast {
+        width: calc(100% - 40px);
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 480px) {
-  .sidebar {
-    gap: 8px;
-    padding: 0 12px;
-  }
+    .sidebar {
+        gap: 8px;
+        padding: 0 12px;
+    }
 
-  .brand {
-    font-size: 24px;
-  }
+    .brand {
+        font-size: 24px;
+    }
 
-  .nav-item {
-    padding: 0 8px;
-    font-size: 11px;
-  }
+    .nav-item {
+        padding: 0 8px;
+        font-size: 11px;
+    }
 
-  .nav-item .count {
-    display: none;
-  }
+    .nav-item .count {
+        display: none;
+    }
 
-  main {
-    padding: 20px 12px 0;
-  }
+    main {
+        padding: 20px 12px 0;
+    }
 
-  .page-title > span {
-    font-size: 11px;
-  }
+    .page-title > span {
+        font-size: 11px;
+    }
 
-  .demo-status {
-    font-size: 10px;
-  }
+    .demo-status {
+        font-size: 10px;
+    }
 
-  .price-heading > span {
-    display: block;
-    margin: 6px 0 0;
-  }
+    .price-heading > span {
+        display: block;
+        margin: 6px 0 0;
+    }
 
-  .trading-workspace .ai-panel {
-    display: block;
-  }
+    .trading-workspace .ai-panel {
+        display: block;
+    }
 
-  .signal-summary {
-    padding-top: 24px;
-  }
+    .signal-summary {
+        padding-top: 24px;
+    }
 
-  .probabilities {
-    margin: 24px 0;
-  }
+    .probabilities {
+        margin: 24px 0;
+    }
 
-  .analysis-metadata {
-    border-top: 1px solid var(--hairline);
-  }
+    .analysis-metadata {
+        border-top: 1px solid var(--hairline);
+    }
 
-  .chart-stats strong {
-    font-size: 10px;
-  }
+    .chart-stats strong {
+        font-size: 10px;
+    }
 
-  .periods button {
-    padding: 8px;
-  }
+    .periods button {
+        padding: 8px;
+    }
 
-  footer {
-    font-size: 9px;
-    gap: 12px;
-  }
+    footer {
+        font-size: 9px;
+        gap: 12px;
+    }
 }
