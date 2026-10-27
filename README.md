@@ -91,4 +91,4 @@ MVP는 국내 주식(코스피·코스닥)을 대상으로 합니다. 종목코�
 업비트 직접 호출과 개발 전용 `/upbit` 프록시는 제거했습니다.
 운영 웹 서버는 `/api`를 Spring Boot로 중계하거나 `VITE_API_BASE_URL`을 설정해야 합니다.
 브라우저 연습 모드는 화면 안내대로 샘플 가격을 사용합니다.
-`AbortSignal.any`와 `AbortSignal.timeout`을 지원하는 Chrome/Edge 116+, Firefox 124+, Safari 17.4+를 지원합니다.
+`AbortSignal.any`와 `AbortSignal.timeout`을 지원하는 브라우저가 필요합니다.
