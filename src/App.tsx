@@ -1,53 +1,47 @@
-import { Link, Outlet, Route, Routes, useLocation } from "react-router-dom";
-import { Sidebar } from "./components/layout/Sidebar";
-import { PageIntro } from "./components/layout/PageIntro";
-import { Footer } from "./components/layout/Footer";
-import { getPageFromPath, pagePaths } from "./routes/paths";
-import "./styles/layout.css";
-import { useDashboard } from "./hooks/useDashboard";
-import { MarketBrowsePage } from "./pages/MarketBrowsePage";
+import { useEffect } from 'react';
+import { initializeAuth, useAuthReady } from './lib/auth';
+import { MyInfoPage } from './pages/MyInfoPage';
+import { CryptoPage } from './pages/CryptoPage';
+import { Route, Routes } from 'react-router-dom';
+import { AppLayout } from './components/layout/AppLayout';
+import { MarketPage } from './pages/MarketPage';
+import { MarketListPage } from './pages/MarketListPage';
+import { PortfolioPage } from './pages/PortfolioPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { pagePaths } from './routes/paths';
+
+import { AuthPage } from './pages/AuthPage';
+import './App.css';
 
 export default function App() {
-  const dashboard = useDashboard();
-  const { pathname } = useLocation();
-  const page = getPageFromPath(pathname);
+    const ready = useAuthReady();
 
-  return (
-    <div className="app-shell">
-      <a className="skip-link" href="#main-content">
-        본문으로 건너뛰기
-      </a>
-      <Sidebar />
-      <main id="main-content" tabIndex={-1}>
-        {page && <PageIntro page={page} />}
+    useEffect(() => {
+        void initializeAuth();
+    }, []);
+
+    if (!ready) return <p role="status">로그인 정보를 확인하는 중…</p>;
+
+    return (
         <Routes>
-          <Route element={<Outlet context={dashboard} />}>
-            <Route path="/" element={<MarketBrowsePage />} />
-            <Route path="/watchlist" element={<MarketBrowsePage favoritesOnly />} />
-          </Route>
-          {[pagePaths["신호 이력"], pagePaths["모의 포트폴리오"]].map(path => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <section className="page-placeholder" aria-label="준비 중">
-                  <p>화면을 준비하고 있어요.</p>
-                </section>
-              }
-            />
-          ))}
-          <Route
-            path="*"
-            element={
-              <section className="page-placeholder">
-                <h1>페이지를 찾을 수 없어요.</h1>
-                <Link to="/">마켓으로 돌아가기</Link>
-              </section>
-            }
-          />
+            <Route path="/login" element={<AuthPage key="login" mode="login" />} />
+            <Route path="/signup" element={<AuthPage key="signup" mode="signup" />} />
+
+            <Route path="/" element={<AppLayout />}>
+                <Route index element={<MarketPage />} />
+                <Route path="/me" element={<MyInfoPage />} />
+                <Route path="/crypto" element={<CryptoPage />} />
+                <Route
+                    path={pagePaths['관심 종목']}
+                    element={<MarketListPage page="관심 종목" />}
+                />
+                <Route
+                    path={pagePaths['신호 이력']}
+                    element={<MarketListPage page="신호 이력" />}
+                />
+                <Route path={pagePaths['모의 포트폴리오']} element={<PortfolioPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+            </Route>
         </Routes>
-        <Footer />
-      </main>
-    </div>
-  );
+    );
 }

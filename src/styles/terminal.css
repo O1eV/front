@@ -1,0 +1,381 @@
+/* Compact, panel-based workspace informed by Coinbase Advanced. */
+body {
+    background: #080b10;
+}
+
+.sidebar {
+    height: 62px;
+    background: #0a0d12;
+    border-color: var(--hairline);
+}
+
+.brand {
+    font-size: 26px;
+    letter-spacing: -1px;
+}
+
+.brand-dot {
+    background: var(--primary);
+}
+
+.nav-item {
+    font-size: 13px;
+}
+
+.nav-item.active::after {
+    background: var(--primary);
+}
+
+main {
+    max-width: 1800px;
+    padding: 18px 20px 0;
+}
+
+.page-heading {
+    margin-bottom: 16px;
+}
+
+h1 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.trading-workspace {
+    grid-template-columns: 210px minmax(0, 1fr) 270px;
+    border-radius: 4px;
+    background: var(--canvas);
+    align-items: stretch;
+}
+
+.market-selector {
+    background: var(--canvas);
+}
+
+.market-search {
+    background: var(--field);
+}
+
+.market-search input {
+    color: var(--ink-soft);
+}
+
+.market-option {
+    padding: 16px 12px;
+}
+
+.market-option.selected {
+    border-left-color: var(--primary);
+    background: var(--canvas-soft);
+}
+
+.market-option-price small {
+    color: var(--positive);
+}
+
+.market-option:last-child .market-option-price small {
+    color: var(--negative);
+}
+
+.market-option-title strong {
+    font-weight: 500;
+}
+
+.chart-stack {
+    min-width: 0;
+    border-right: 1px solid var(--hairline);
+}
+
+.trading-workspace .chart-panel {
+    padding: 20px 20px 0;
+    min-height: 480px;
+}
+
+.stock-heading h2 {
+    font-size: 18px;
+}
+
+.stock-heading .stock-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 17px;
+}
+
+.star-button {
+    min-width: 32px;
+    min-height: 32px;
+}
+
+.star-button.is-favorite {
+    color: #c5a35b;
+}
+
+.star-button.is-favorite svg {
+    fill: none;
+}
+
+.price-heading {
+    font-size: 27px;
+    margin: 16px 0 12px;
+    font-weight: 600;
+}
+
+.price-heading > span {
+    font-size: 11px;
+}
+
+.positive {
+    color: var(--positive);
+}
+
+.negative {
+    color: var(--negative);
+}
+
+.chart-tools {
+    border-top: 1px solid var(--hairline-soft);
+    padding-top: 10px;
+    margin-bottom: 0;
+}
+
+.periods button {
+    min-height: 32px;
+    padding: 5px 9px;
+    font-size: 11px;
+}
+
+.periods button.chosen {
+    background: var(--canvas-soft);
+}
+
+.chart-mode {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 10px;
+    color: var(--text-faint);
+}
+
+.chart-mode button {
+    border-radius: 3px;
+    padding: 4px 7px;
+    color: var(--text-muted);
+}
+
+.chart-mode button[aria-pressed='true'] {
+    background: var(--canvas-soft);
+    color: var(--ink-soft);
+}
+
+.chart-mode > span {
+    margin-left: auto;
+}
+
+.trading-workspace .chart-wrap > svg {
+    height: 280px;
+}
+
+.chart-y {
+    top: 62px;
+    bottom: 40px;
+}
+
+.chart-x {
+    font-size: 9px;
+}
+
+.chart-stats {
+    padding: 12px 0 16px;
+    font-size: 10px;
+}
+
+.chart-stats strong {
+    font-size: 11px;
+}
+
+.trading-workspace .ai-panel {
+    border-left: 0;
+    background: var(--canvas);
+    padding: 20px;
+}
+
+.ai-heading h2 {
+    font-size: 14px;
+}
+
+.pill {
+    border-radius: 4px;
+    background: var(--canvas-soft);
+}
+
+.signal-summary {
+    padding-top: 28px;
+}
+
+.signal-summary > strong {
+    font-size: 26px;
+    color: var(--positive);
+}
+
+.buy {
+    background: var(--positive);
+}
+
+.hold {
+    background: var(--text-muted);
+}
+
+.sell {
+    background: var(--negative);
+}
+
+.probability-label strong {
+    font-family: var(--font-ui);
+    font-weight: 400;
+}
+
+.bar-track {
+    height: 4px;
+}
+
+.signal-log {
+    border-top: 1px solid var(--hairline);
+}
+
+.signal-log-heading {
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--hairline);
+}
+
+.signal-log-heading h2 {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.signal-log-heading > span {
+    font-size: 10px;
+    color: var(--text-faint);
+}
+
+.signal-log table {
+    font-size: 11px;
+}
+
+.signal-log th {
+    font-size: 10px;
+    background: var(--canvas);
+    color: var(--text-faint);
+    padding: 10px 14px;
+}
+
+.signal-log td {
+    padding: 10px 14px;
+    font-size: 11px;
+}
+
+.log-time {
+    font-family: var(--font-ui);
+    color: var(--text-muted);
+}
+
+.signal-log .signal-pill {
+    font-size: 10px;
+    padding: 2px 5px;
+    color: var(--positive);
+    background: transparent;
+}
+
+.signal-log .signal-pill.neutral {
+    color: var(--text-muted);
+}
+
+.signal-pill > span {
+    background: var(--positive);
+}
+
+.signal-pill {
+    color: var(--positive);
+}
+
+footer {
+    font-size: 10px;
+    padding: 14px 0;
+}
+
+@media (max-width: 1200px) {
+    .trading-workspace {
+        grid-template-columns: 175px minmax(0, 1fr) 235px;
+    }
+
+    .trading-workspace .chart-panel {
+        padding: 16px 16px 0;
+    }
+
+    .trading-workspace .ai-panel {
+        padding: 18px 16px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .trading-workspace {
+        grid-template-columns: 180px minmax(0, 1fr);
+    }
+
+    .chart-stack {
+        border-right: 0;
+    }
+
+    .trading-workspace .ai-panel {
+        border-top: 1px solid var(--hairline);
+        grid-template-columns: 1fr 1.3fr;
+    }
+
+    .chart-y {
+        top: 60px;
+    }
+}
+
+@media (max-width: 700px) {
+    main {
+        padding: 18px 12px 0;
+    }
+
+    .sidebar {
+        height: 56px;
+        padding: 0 16px;
+    }
+
+    .market-option.selected {
+        border-bottom-color: var(--primary);
+    }
+
+    .chart-stack {
+        width: 100%;
+    }
+
+    .trading-workspace .chart-panel {
+        min-height: 450px;
+    }
+
+    .trading-workspace .chart-wrap > svg {
+        height: 250px;
+    }
+
+    .signal-log table {
+        min-width: 500px;
+    }
+
+    .trading-workspace .ai-panel {
+        padding: 20px;
+    }
+
+    .market-option {
+        min-width: 136px;
+    }
+}

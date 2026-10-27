@@ -1,45 +1,57 @@
-import { useState } from "react";
-import { sampleStocks } from "../data/markets";
-import type { Stock, MarketFilter, ChartPeriod } from "../types/market";
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useWatchlist } from './useWatchlist';
+import { sampleStocks } from '../data/markets';
+import type { Stock, MarketFilter, ChartPeriod } from '../types/market';
 
 export function useDashboard() {
-  const [selectedStock, setSelectedStock] = useState<Stock>(sampleStocks[0]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("1일");
-  const [favoriteSymbols, setFavoriteSymbols] = useState<string[]>(["005930", "000660"]);
-  const [signalFilter, setSignalFilter] = useState<MarketFilter>("전체");
+    const [lastSelectedStock, setLastSelectedStock] = useState<Stock>(sampleStocks[0]);
+    const [params, setParams] = useSearchParams();
+    const { pathname } = useLocation();
+    const selectedStock =
+        sampleStocks.find(stock => stock.symbol === params.get('symbol')) ?? lastSelectedStock;
 
-  function toggleFavorite(symbol: string) {
-    setFavoriteSymbols(currentSymbols => {
-      const isAlreadyFavorite = currentSymbols.includes(symbol);
-      if (isAlreadyFavorite) {
-        return currentSymbols.filter(favoriteSymbol => favoriteSymbol !== symbol);
-      }
-      return [...currentSymbols, symbol];
+    function setSelectedStock(stock: Stock) {
+        setLastSelectedStock(stock);
+        if (pathname === '/') {
+            setParams(previous => {
+                previous.set('symbol', stock.symbol);
+                return previous;
+            });
+        }
+    }
+    const [searchQuery, setSearchQuery] = useState('');
+    const [chartPeriod, setChartPeriod] = useState<ChartPeriod>('1일');
+
+    const [signalFilter, setSignalFilter] = useState<MarketFilter>('전체');
+    const [toastMessage, setToastMessage] = useState('');
+
+    const watchlist = useWatchlist(setToastMessage);
+
+    const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+
+    const filteredStocks = sampleStocks.filter(stock => {
+        const matchesQuery = `${stock.name}${stock.symbol}`
+            .toLowerCase()
+            .includes(normalizedSearchQuery);
+
+        const matchesSignal = signalFilter !== '매수 신호' || stock.buyProbability > 50;
+
+        return matchesQuery && matchesSignal;
     });
-  }
 
-  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
-
-  const filteredStocks = sampleStocks.filter(stock => {
-    const matchesQuery = `${stock.name}${stock.symbol}`
-      .toLowerCase()
-      .includes(normalizedSearchQuery);
-    const matchesSignal = signalFilter !== "매수 신호" || stock.buyProbability > 50;
-    return matchesQuery && matchesSignal;
-  });
-
-  return {
-    selectedStock,
-    setSelectedStock,
-    searchQuery,
-    setSearchQuery,
-    chartPeriod,
-    setChartPeriod,
-    favoriteSymbols,
-    toggleFavorite,
-    signalFilter,
-    setSignalFilter,
-    filteredStocks,
-  };
+    return {
+        selectedStock,
+        setSelectedStock,
+        searchQuery,
+        setSearchQuery,
+        chartPeriod,
+        setChartPeriod,
+        ...watchlist,
+        signalFilter,
+        setSignalFilter,
+        filteredStocks,
+        toastMessage,
+        setToastMessage,
+    };
 }
