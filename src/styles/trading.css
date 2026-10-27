@@ -1,395 +1,395 @@
 .trading-page {
-  display: grid;
-  gap: 24px;
+    display: grid;
+    gap: 24px;
 }
 
 .demo-notice {
-  padding: 18px 20px;
-  background: var(--canvas-soft);
-  border-radius: 12px;
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.7;
+    padding: 18px 20px;
+    background: var(--canvas-soft);
+    border-radius: 12px;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.7;
 }
 
 .account-summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
 }
 
 .summary-card {
-  padding: 22px 18px;
-  display: grid;
-  gap: 16px;
-  min-width: 0;
+    padding: 22px 18px;
+    display: grid;
+    gap: 16px;
+    min-width: 0;
 }
 
 .summary-card span {
-  color: var(--text-muted);
-  font-size: 12px;
+    color: var(--text-muted);
+    font-size: 12px;
 }
 
 .summary-card strong {
-  font-size: clamp(15px, 1.4vw, 23px);
-  overflow-wrap: anywhere;
+    font-size: clamp(15px, 1.4vw, 23px);
+    overflow-wrap: anywhere;
 }
 
 .paper-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 20px;
-  align-items: start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 20px;
+    align-items: start;
 }
 
 .trading-panel {
-  overflow: hidden;
-  min-width: 0;
+    overflow: hidden;
+    min-width: 0;
 }
 
 .trading-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: 0 24px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 0 24px 24px;
 }
 
 .trading-filters label,
 .order-panel label {
-  display: grid;
-  gap: 9px;
-  font-size: 12px;
-  color: var(--text-muted);
+    display: grid;
+    gap: 9px;
+    font-size: 12px;
+    color: var(--text-muted);
 }
 
 .trading-filters label {
-  flex: 1 1 150px;
+    flex: 1 1 150px;
 }
 
 .trading-filters select,
 .trading-filters input,
 .order-panel select,
 .order-panel input {
-  width: 100%;
-  min-width: 0;
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  padding: 12px;
-  min-height: 44px;
-  background: var(--canvas);
-  color: var(--ink-soft);
-  font: inherit;
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 44px;
+    background: var(--canvas);
+    color: var(--ink-soft);
+    font: inherit;
 }
 
 .order-panel {
-  padding: 24px;
+    padding: 24px;
 }
 
 .order-panel h2 {
-  font-size: 20px;
+    font-size: 20px;
 }
 
 .order-description {
-  margin: 10px 0 16px;
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.6;
+    margin: 10px 0 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
 }
 
 .order-panel form {
-  display: grid;
-  gap: 14px;
+    display: grid;
+    gap: 14px;
 }
 
 .order-sides {
-  display: flex;
-  background: var(--canvas-soft);
-  padding: 4px;
-  border-radius: 10px;
+    display: flex;
+    background: var(--canvas-soft);
+    padding: 4px;
+    border-radius: 10px;
 }
 
 .order-sides button {
-  flex: 1;
-  min-height: 44px;
-  border-radius: 8px;
-  color: var(--text-muted);
+    flex: 1;
+    min-height: 44px;
+    border-radius: 8px;
+    color: var(--text-muted);
 }
 
-.order-sides button[aria-pressed="true"] {
-  background: var(--canvas);
-  color: var(--ink-soft);
-  box-shadow: 0 1px 4px #0000000d;
-  font-weight: 600;
+.order-sides button[aria-pressed='true'] {
+    background: var(--canvas);
+    color: var(--ink-soft);
+    box-shadow: 0 1px 4px #0000000d;
+    font-weight: 600;
 }
 
 .order-details {
-  display: grid;
-  gap: 12px;
-  margin: 5px 0;
-  font-size: 12px;
+    display: grid;
+    gap: 12px;
+    margin: 5px 0;
+    font-size: 12px;
 }
 
 .order-details div {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .order-details dt {
-  color: var(--text-muted);
+    color: var(--text-muted);
 }
 
 .order-details dd {
-  margin: 0;
-  font-weight: 600;
+    margin: 0;
+    font-weight: 600;
 }
 
 .order-submit {
-  min-height: 48px;
-  border-radius: 10px;
-  background: var(--primary);
-  color: white;
-  font-weight: 600;
+    min-height: 48px;
+    border-radius: 10px;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
 }
 
 .order-submit:disabled,
 .max-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .max-button {
-  min-height: 44px;
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  font-size: 12px;
+    min-height: 44px;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    font-size: 12px;
 }
 
 .order-feedback {
-  margin-top: 16px;
-  font-size: 13px;
-  line-height: 1.6;
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.6;
 }
 
 .holding-link {
-  min-height: 44px;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+    min-height: 44px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 .reset-account {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  font-size: 12px;
-  color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-muted);
 }
 
 .reset-account button {
-  min-height: 44px;
-  padding: 8px 16px;
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
 }
 
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 @media (max-width: 1100px) {
-  .account-summary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+    .account-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-  .paper-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+    .paper-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 @media (max-width: 600px) {
-  .trading-filters {
-    padding: 0 16px 16px;
-  }
+    .trading-filters {
+        padding: 0 16px 16px;
+    }
 
-  .trading-panel .section-heading {
-    flex-wrap: wrap;
-    padding: 20px 16px;
-  }
+    .trading-panel .section-heading {
+        flex-wrap: wrap;
+        padding: 20px 16px;
+    }
 
-  .summary-card {
-    padding: 16px 12px;
-  }
+    .summary-card {
+        padding: 16px 12px;
+    }
 
-  .summary-card strong {
-    font-size: 16px;
-  }
+    .summary-card strong {
+        font-size: 16px;
+    }
 }
 
 /* 모의투자 화면에서는 공통 버튼·테이블 호버 강조를 사용하지 않습니다. */
 .trading-page button {
-  transition: none;
+    transition: none;
 }
 
 .trading-page button:hover,
 .trading-page tbody tr:hover {
-  background-color: transparent;
+    background-color: transparent;
 }
 
-.trading-page .order-sides button[aria-pressed="true"] {
-  box-shadow: none;
+.trading-page .order-sides button[aria-pressed='true'] {
+    box-shadow: none;
 }
 
-.trading-page .order-sides button[aria-pressed="true"]:hover {
-  background-color: var(--canvas);
+.trading-page .order-sides button[aria-pressed='true']:hover {
+    background-color: var(--canvas);
 }
 
 .trading-page .order-submit:hover {
-  background-color: var(--primary);
+    background-color: var(--primary);
 }
 
 .paper-records {
-  display: grid;
-  gap: 20px;
-  min-width: 0;
+    display: grid;
+    gap: 20px;
+    min-width: 0;
 }
 
 .trading-page .order-panel {
-  padding: 20px;
+    padding: 20px;
 }
 
 .trading-page .order-panel form {
-  gap: 16px;
+    gap: 16px;
 }
 
 .trading-page .order-description {
-  margin: 12px 0 20px;
+    margin: 12px 0 20px;
 }
 
 .trading-page .order-details {
-  gap: 8px;
-  margin: 2px 0;
+    gap: 8px;
+    margin: 2px 0;
 }
 
 .trading-page .order-feedback:empty {
-  display: none;
+    display: none;
 }
 
 .trading-page .no-results {
-  padding: 28px 20px;
+    padding: 28px 20px;
 }
 
 @media (max-width: 1100px) {
-  .paper-records {
-    display: contents;
-  }
+    .paper-records {
+        display: contents;
+    }
 
-  .paper-grid > .order-panel {
-    order: 1;
-  }
+    .paper-grid > .order-panel {
+        order: 1;
+    }
 
-  .paper-records > .trading-panel:nth-child(2) {
-    order: 2;
-  }
+    .paper-records > .trading-panel:nth-child(2) {
+        order: 2;
+    }
 
-  .paper-records > .reset-account {
-    order: 3;
-  }
+    .paper-records > .reset-account {
+        order: 3;
+    }
 }
 
 @media (min-width: 1101px) {
-  .paper-grid {
-    align-items: stretch;
-  }
+    .paper-grid {
+        align-items: stretch;
+    }
 
-  .paper-records {
-    grid-template-rows: minmax(min-content, 1fr) minmax(min-content, 1fr) auto;
-  }
+    .paper-records {
+        grid-template-rows: minmax(min-content, 1fr) minmax(min-content, 1fr) auto;
+    }
 
-  .paper-records > .trading-panel {
-    display: flex;
-    flex-direction: column;
-  }
+    .paper-records > .trading-panel {
+        display: flex;
+        flex-direction: column;
+    }
 
-  .paper-records > .trading-panel .no-results {
-    flex: 1;
-    display: grid;
-    place-items: center;
-  }
+    .paper-records > .trading-panel .no-results {
+        flex: 1;
+        display: grid;
+        place-items: center;
+    }
 
-  .paper-grid > .order-panel {
-    align-self: stretch;
-  }
+    .paper-grid > .order-panel {
+        align-self: stretch;
+    }
 }
 
 .order-history-filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 12px;
-  padding: 0 24px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    padding: 0 24px 20px;
 }
 .order-history-filters label {
-  display: grid;
-  gap: 6px;
-  font-size: 13px;
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
 }
 .order-history-filters input,
 .order-history-filters select,
 .order-history-filters button {
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  padding: 10px 12px;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 10px 12px;
 }
 
 .order-panel fieldset {
-  display: grid;
-  gap: 16px;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
+    display: grid;
+    gap: 16px;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
 }
 
 .order-panel fieldset > p {
-  margin: 0;
-  line-height: 1.6;
+    margin: 0;
+    line-height: 1.6;
 }
 
 .order-panel fieldset > .order-submit {
-  width: 100%;
-  margin-top: 8px;
+    width: 100%;
+    margin-top: 8px;
 }
 
 .server-reset-panel {
-  padding: 20px 24px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+    padding: 20px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
 }
 .server-reset-panel h2 {
-  margin: 0 0 8px;
-  font-size: 18px;
+    margin: 0 0 8px;
+    font-size: 18px;
 }
 .server-reset-panel p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 13px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
 }
 .server-reset-panel .reset-account p {
-  margin-bottom: 12px;
+    margin-bottom: 12px;
 }
 .server-reset-panel .reset-account button + button {
-  margin-left: 8px;
+    margin-left: 8px;
 }
-.server-reset-panel > [role="status"] {
-  flex-basis: 100%;
+.server-reset-panel > [role='status'] {
+    flex-basis: 100%;
 }

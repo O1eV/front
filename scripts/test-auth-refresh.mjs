@@ -7,12 +7,12 @@ const compile = source => ts.transpile(source, {
 });
 const url = source => `data:text/javascript;base64,${Buffer.from(compile(source)).toString("base64")}`;
 const clientUrl = url(fs.readFileSync("src/api/apiClient.ts", "utf8").replace("import.meta.env.VITE_API_BASE_URL", "undefined"));
-const apiUrl = url(fs.readFileSync("src/api/auth.ts", "utf8").replace('"./apiClient"', JSON.stringify(clientUrl)));
+const apiUrl = url(fs.readFileSync("src/api/auth.ts", "utf8").replace(/['"]\.\/apiClient['"]/, JSON.stringify(clientUrl)));
 const reactUrl = url("export const useSyncExternalStore = (_, get) => get();");
 const authUrl = url(fs.readFileSync("src/lib/auth.ts", "utf8")
-  .replace('"../api/auth"', JSON.stringify(apiUrl))
-  .replace('"../api/apiClient"', JSON.stringify(clientUrl))
-  .replace('"react"', JSON.stringify(reactUrl)));
+  .replace(/['"]\.\.\/api\/auth['"]/, JSON.stringify(apiUrl))
+  .replace(/['"]\.\.\/api\/apiClient['"]/, JSON.stringify(clientUrl))
+  .replace(/['"]react['"]/, JSON.stringify(reactUrl)));
 
 const storage = new Map();
 globalThis.sessionStorage = {

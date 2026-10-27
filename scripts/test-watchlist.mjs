@@ -11,9 +11,9 @@ globalThis.hooks={
 };
 const react=compile('export const {useState,useRef,useEffect}=globalThis.hooks;');
 const client=compile(fs.readFileSync('src/api/apiClient.ts','utf8').replace('import.meta.env.VITE_API_BASE_URL','undefined'));
-const api=compile(fs.readFileSync('src/api/watchlist.ts','utf8').replace('"./apiClient"',JSON.stringify(client)));
+const api=compile(fs.readFileSync('src/api/watchlist.ts','utf8').replace(/['"]\.\/apiClient['"]/, JSON.stringify(client)));
 const auth=compile('export const useAuthSession=()=>globalThis.session;');
-const hook=compile(fs.readFileSync('src/hooks/useWatchlist.ts','utf8').replace('"react"',JSON.stringify(react)).replace('"../api/watchlist"',JSON.stringify(api)).replace('"../lib/auth"',JSON.stringify(auth)).replace('"../api/apiClient"',JSON.stringify(client)));
+const hook=compile(fs.readFileSync('src/hooks/useWatchlist.ts','utf8').replace(/['"]react['"]/, JSON.stringify(react)).replace(/['"]\.\.\/api\/watchlist['"]/, JSON.stringify(api)).replace(/['"]\.\.\/lib\/auth['"]/, JSON.stringify(auth)).replace(/['"]\.\.\/api\/apiClient['"]/, JSON.stringify(client)));
 const {useWatchlist}=await import(hook);
 globalThis.window={setInterval:()=>1,clearInterval:()=>{}};
 globalThis.session={user:{userId:'first'},accessToken:'access'};

@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 import ts from "typescript";
 const modulePath = pathToFileURL(`${process.cwd()}/node_modules/@stomp/stompjs/esm6/index.js`).href;
 const source = fs.readFileSync("src/api/realtime.ts", "utf8")
-  .replace('"@stomp/stompjs"', JSON.stringify(modulePath))
+  .replace(/['"]@stomp\/stompjs['"]/, JSON.stringify(modulePath))
   .replace("import.meta.env.VITE_WS_URL", "undefined");
 const compiled = ts.transpile(source, { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext });
 const { parseRealtimeMessage: parse, createRealtimeClient } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
@@ -30,3 +30,12 @@ const alert = { type: "SIGNAL_CHANGED", symbol: "KRW-BTC", from: "HOLD", to: "BU
 assert.equal(parse("/user/queue/alerts", JSON.stringify(alert)).to, "BUY");
 assert.equal(parse("/topic/prices/KRW-BTC", JSON.stringify(alert)), undefined);
 console.log("PASS: STOMP URL·인증 헤더·10초 heartbeat·재연결 설정·시세/신호/알림 검증·잘못된 토픽 차단");
+
+const extra = {unexpected: 'discard'};
+for (const [destination, payload] of [
+ ['/topic/prices/KRW-BTC', price], ['/topic/signals/KRW-BTC', signal], ['/user/queue/alerts', alert]
+]) {
+ assert.equal(Object.hasOwn(parse(destination, JSON.stringify({...payload, ...extra})), 'unexpected'), false);
+}
+assert.deepEqual(parse('/topic/signals/KRW-BTC', JSON.stringify({...signal, probabilities:{...signal.probabilities,...extra}})).probabilities, signal.probabilities);
+console.log('PASS: realtime events discard unknown top-level and nested fields');

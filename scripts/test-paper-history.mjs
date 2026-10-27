@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import ts from 'typescript';
 const compile = source => `data:text/javascript;base64,${Buffer.from(ts.transpile(source,{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext})).toString('base64')}`;
 const client = compile(fs.readFileSync('src/api/apiClient.ts','utf8').replace('import.meta.env.VITE_API_BASE_URL','undefined'));
-const paper = compile(fs.readFileSync('src/api/paper.ts','utf8').replace('"./apiClient"',JSON.stringify(client)));
+const paper = compile(fs.readFileSync('src/api/paper.ts','utf8').replace(/['"]\.\/apiClient['"]/, JSON.stringify(client)));
 const { getPaperOrders, getPaperPortfolio, placePaperOrder, resetPaperAccount } = await import(paper);
 let request;
 globalThis.fetch = async (url, options) => {
