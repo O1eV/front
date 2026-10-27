@@ -43,10 +43,15 @@ export function usePaperPortfolio(initialSymbol: string) {
         side === 'buy' ? Math.floor(account.cash / stock.price) : (holding?.quantity ?? 0);
 
     const count = Number(quantity);
-    const valid = Number.isSafeInteger(count) && count > 0 && count <= maxQuantity;
+    const valid =
+        stock.symbol === symbol && Number.isSafeInteger(count) && count > 0 && count <= maxQuantity;
 
     function handleSubmit(event: FormEvent) {
         event.preventDefault();
+        if (!valid) {
+            setFeedback('지원 종목과 주문 수량을 확인해주세요.');
+            return;
+        }
 
         try {
             const next = executePaperOrder(
