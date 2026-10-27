@@ -37,17 +37,32 @@ export function mapCandles(raw: ApiCandle[]): Candle[] {
   }));
 }
 
+async function findCoinMarket(symbol: string, signal: AbortSignal) {
+  let page = 0;
+  let received = 0;
+  while (true) {
+    const result = await getMarkets(
+      { assetClass: "COIN", marketState: "", signal: "", page },
+      signal
+    );
+    const ticker = result.items.find(item => item.symbol === symbol);
+    if (ticker) return ticker;
+    received += result.items.length;
+    if (!result.items.length || received >= result.totalElements) return;
+    page += 1;
+  }
+}
+
 export async function getCoinChart(symbol: string, period: ChartPeriod, signal: AbortSignal) {
   const { interval, limit } = chartIntervals[period];
   const params = new URLSearchParams({ interval, limit: String(limit) });
-  const [markets, result] = await Promise.all([
-    getMarkets({ assetClass: "COIN", marketState: "", signal: "", page: 0 }, signal),
+  const [ticker, result] = await Promise.all([
+    findCoinMarket(symbol, signal),
     apiClient<{ symbol: string; interval: string; candles: ApiCandle[] }>(
       `markets/${encodeURIComponent(symbol)}/candles?${params}`,
       { signal }
     ),
   ]);
-  const ticker = markets.items.find(market => market.symbol === symbol);
   const candles = mapCandles(result.candles);
 
   if (!ticker || !candles.length) throw new Error("표시할 시세 데이터가 없어요.");

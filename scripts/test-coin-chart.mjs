@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import ts from 'typescript';
+const source = fs.readFileSync('src/api/coinChart.ts', 'utf8').replace(/^import .*;\n/gm, '');
+const stub = `
+const getMarkets = async (filters) => { globalThis.pages.push(filters.page); return globalThis.marketPages[filters.page]; };
+const apiClient = async () => globalThis.candleResponse;
+`;
+const compiled = ts.transpile(stub + source, {target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext});
+const {mapCandles, getCoinChart} = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
+const first = {time:'2026-10-26T00:00:00Z',open:100,high:120,low:90,close:110,volume:10};
+const second = {...first,time:'2026-10-26T00:01:00Z',close:115};
+const candles = mapCandles([second, first]);
+assert.equal(candles[0].timestamp, Date.parse(first.time));
+assert.ok(Math.abs(candles[0].priceChangePercent - 10) < 1e-10);
+assert.ok(Math.abs(candles[1].priceChangePercent - (115/110-1)*100) < 1e-10);
+const ticker = {symbol:'KRW-BTC',price:115};
+globalThis.marketPages = [{items:[{symbol:'KRW-ETH'}], totalElements:2}, {items:[ticker],totalElements:2}];
+globalThis.candleResponse = {symbol:'KRW-BTC',interval:'1m',candles:[second,first]};
+globalThis.pages = [];
+assert.equal((await getCoinChart('KRW-BTC','1시간', new AbortController().signal)).ticker.symbol,'KRW-BTC');
+assert.deepEqual(globalThis.pages,[0,1]);
+globalThis.pages = [];
+await assert.rejects(getCoinChart('KRW-XRP','1시간',new AbortController().signal));
+assert.deepEqual(globalThis.pages,[0,1]);
+console.log('PASS: paginated coin lookup, missing market, candle ordering and change rates');
