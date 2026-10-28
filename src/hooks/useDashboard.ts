@@ -9,14 +9,27 @@ export function useDashboard() {
     const [lastSelectedStock, setLastSelectedStock] = useState<Stock>(sampleStocks[0]);
     const [params, setParams] = useSearchParams();
     const { pathname } = useLocation();
-    const selectedStock =
-        sampleStocks.find(stock => stock.symbol === params.get('symbol')) ?? lastSelectedStock;
+    const requestedSymbol = params.get('symbol');
+    const selectedStock: Stock =
+        requestedSymbol && /^\d{6}$/.test(requestedSymbol)
+            ? {
+                  ...(sampleStocks.find(stock => stock.symbol === requestedSymbol) ??
+                      lastSelectedStock),
+                  symbol: requestedSymbol,
+                  name:
+                      params.get('name') ||
+                      sampleStocks.find(stock => stock.symbol === requestedSymbol)?.name ||
+                      requestedSymbol,
+                  exchange: '국내 주식',
+              }
+            : lastSelectedStock;
 
     function setSelectedStock(stock: Stock) {
         setLastSelectedStock(stock);
         if (pathname === '/') {
             setParams(previous => {
                 previous.set('symbol', stock.symbol);
+                previous.set('name', stock.name);
                 return previous;
             });
         }

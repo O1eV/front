@@ -6,7 +6,7 @@ import { Icon } from '../ui/Icon';
 import '../../styles/navigation-flow.css';
 
 function marketHref(market: MarketSearchItem) {
-    const params = new URLSearchParams({ symbol: market.symbol });
+    const params = new URLSearchParams({ symbol: market.symbol, name: market.koreanName });
 
     return `${market.assetClass === 'COIN' ? '/crypto' : '/'}?${params}`;
 }
@@ -36,7 +36,10 @@ export function GlobalSearch({
                 const result = await searchMarkets(normalized, controller.signal);
 
                 if (!controller.signal.aborted)
-                    setSearch({ query: normalized, items: result.items });
+                    setSearch({
+                        query: normalized,
+                        items: result.items.filter(item => item.assetClass === 'COIN'),
+                    });
             } catch (error) {
                 if (!controller.signal.aborted)
                     setSearch({
@@ -91,8 +94,8 @@ export function GlobalSearch({
             <label className="global-search">
                 <Icon name="search" size={18} />
                 <input
-                    aria-label="전체 종목 검색"
-                    placeholder="주식·코인 이름 또는 코드 검색"
+                    aria-label="코인 검색"
+                    placeholder="코인 이름 또는 코드 검색"
                     value={query}
                     autoComplete="off"
                     aria-controls={open && normalized ? 'global-search-results' : undefined}

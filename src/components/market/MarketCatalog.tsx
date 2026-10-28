@@ -122,6 +122,7 @@ export function MarketCatalog() {
                                     <th>등락률</th>
                                     <th>시장 상태</th>
                                     <th>AI 신호</th>
+                                    <th>확신도</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -176,7 +177,20 @@ export function MarketCatalog() {
                                             {(market.changeRate * 100).toFixed(2)}%
                                         </td>
                                         <td>{states[market.marketState]}</td>
-                                        <td>{market.signal ? signals[market.signal] : '미제공'}</td>
+                                        <td>
+                                            {token
+                                                ? market.signal
+                                                    ? signals[market.signal]
+                                                    : '미제공'
+                                                : '로그인 필요'}
+                                        </td>
+                                        <td>
+                                            {token && market.confidence != null
+                                                ? `${(market.confidence * 100).toFixed(1)}%`
+                                                : token
+                                                  ? '미제공'
+                                                  : '로그인 필요'}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -219,7 +233,8 @@ export function MarketCatalog() {
                 </>
             )}
             <p className="ranking-disclaimer">
-                현재 코인 3종을 지원합니다. AI 신호는 모델 연동 후 제공됩니다.
+                현재 코인 3종을 지원합니다. 국내·해외 주식은 제공하지 않습니다. AI 신호와 확신도는
+                로그인 후 확인할 수 있어요.
             </p>
         </section>
     );
