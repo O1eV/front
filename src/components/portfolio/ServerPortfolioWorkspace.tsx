@@ -324,7 +324,14 @@ function ServerAccount({ token, initialSymbol }: { token: string; initialSymbol:
                                             ))}
                                         </select>
                                     </label>
-                                    <p>참고 현재가: {price ? money(price) : '수집 시세 대기 중'}</p>
+                                    <p>
+                                        참고 현재가:{' '}
+                                        {collected?.data
+                                            ? money(collected.data.price)
+                                            : '수집 시세 대기 중'}
+                                        {collected?.data?.stale &&
+                                            ' · 갱신 지연, 주문 계산에서 제외'}
+                                    </p>
                                     <p>
                                         보유 수량:{' '}
                                         {holding?.quantity.toLocaleString('ko-KR', {
