@@ -1,7 +1,7 @@
 export interface Stock {
     name: string;
     symbol: string;
-    exchange: 'KOSPI' | 'KOSDAQ' | 'UPBIT' | '국내 주식';
+    exchange: 'KOSPI' | 'KOSDAQ' | 'UPBIT';
     icon: string;
     color: string;
     price: number;

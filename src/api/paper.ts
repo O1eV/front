@@ -28,14 +28,24 @@ export async function getPaperOrders(
 
     if (filters.symbol.trim()) params.set('symbol', filters.symbol.trim().toUpperCase());
 
-    const data = await apiClient<{
-        orders: (Omit<PaperOrderRecord, 'executedAt' | 'fee' | 'signalAtOrder'> & {
-            orderedAt: string;
-        })[];
-        pageInfo: Omit<PaperOrderHistory, 'items'>;
-    }>(`paper/orders?${params}`, { token, signal });
+    const data = await apiClient<PaperOrderHistoryResponse>(`paper/orders?${params}`, {
+        token,
+        signal,
+    });
 
+    return toPaperOrderHistory(data);
+}
+
+type PaperOrderHistoryResponse = {
+    orders: (Omit<PaperOrderRecord, 'executedAt' | 'fee' | 'signalAtOrder'> & {
+        orderedAt: string;
+    })[];
+    pageInfo: Omit<PaperOrderHistory, 'items'>;
+};
+
+export function toPaperOrderHistory(data: PaperOrderHistoryResponse): PaperOrderHistory {
     if (
+        !data ||
         !Array.isArray(data.orders) ||
         !data.pageInfo ||
         !Number.isInteger(data.pageInfo.page) ||
@@ -50,12 +60,17 @@ export async function getPaperOrders(
     const items = data.orders.map(order => {
         if (
             !order ||
+            !Number.isSafeInteger(order.orderId) ||
+            order.orderId <= 0 ||
+            (order.side !== 'BUY' && order.side !== 'SELL') ||
+            typeof order.orderedAt !== 'string' ||
             typeof order.symbol !== 'string' ||
             ![order.quantity, order.price].every(Number.isFinite) ||
             !Number.isFinite(Date.parse(order.orderedAt))
         )
             throw new Error('거래 내역 응답을 확인할 수 없어요.');
 
+        // 현재 API에는 수수료·당시 신호 필드가 없어 미기록으로 표시한다.
         return { ...order, executedAt: order.orderedAt, fee: null, signalAtOrder: null };
     });
 

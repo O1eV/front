@@ -68,7 +68,7 @@ export function MarketCatalog() {
             <div className="catalog-filters">
                 {(
                     [
-                        ['assetClass', '자산군', assets],
+                        ['assetClass', '자산군', { COIN: assets.COIN }],
                         ['marketState', '시장 상태', states],
                         ['signal', '신호 유형', signals],
                     ] as const

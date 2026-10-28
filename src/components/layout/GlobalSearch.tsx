@@ -6,9 +6,9 @@ import { Icon } from '../ui/Icon';
 import '../../styles/navigation-flow.css';
 
 function marketHref(market: MarketSearchItem) {
-    const params = new URLSearchParams({ symbol: market.symbol, name: market.koreanName });
+    const params = new URLSearchParams({ symbol: market.symbol });
 
-    return `${market.assetClass === 'COIN' ? '/crypto' : '/'}?${params}`;
+    return `/crypto?${params}`;
 }
 
 export function GlobalSearch({
@@ -38,6 +38,7 @@ export function GlobalSearch({
                 if (!controller.signal.aborted)
                     setSearch({
                         query: normalized,
+                        // 검색 API는 q와 limit만 지원하므로 제공 범위 밖의 자산을 클라이언트에서 제외한다.
                         items: result.items.filter(item => item.assetClass === 'COIN'),
                     });
             } catch (error) {

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { ApiError } from '../api/apiClient';
 import { getCollectedPrice, type CollectedPrice } from '../api/coinChart';
 
 export function useCollectedPrice(symbol: string) {
@@ -7,7 +6,6 @@ export function useCollectedPrice(symbol: string) {
         symbol: string;
         data?: CollectedPrice;
         error?: string;
-        errorCode?: string;
     }>();
 
     useEffect(() => {
@@ -37,7 +35,6 @@ export function useCollectedPrice(symbol: string) {
                             previous?.symbol === symbol && previous.data
                                 ? { ...previous.data, stale: true }
                                 : undefined,
-                        errorCode: error instanceof ApiError ? error.code : undefined,
                         error:
                             error instanceof Error
                                 ? error.message
