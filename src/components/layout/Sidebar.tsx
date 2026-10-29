@@ -70,6 +70,12 @@ export function Sidebar({ favoriteSymbols, selectedSymbol, onSelectStock }: Side
                 >
                     코인 시세
                 </NavLink>
+                <NavLink
+                    className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    to="/stocks"
+                >
+                    국내 주식
+                </NavLink>
             </nav>
 
             <GlobalSearch onSelectStock={onSelectStock} />

@@ -2,13 +2,14 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { sampleStocks } from '../../data/markets';
 import { searchMarkets, type MarketSearchItem } from '../../api/markets';
+import { demoStocks } from '../../api/demoStocks';
 import { Icon } from '../ui/Icon';
 import '../../styles/navigation-flow.css';
 
 function marketHref(market: MarketSearchItem) {
     const params = new URLSearchParams({ symbol: market.symbol });
 
-    return `/crypto?${params}`;
+    return `${market.assetClass === 'KR_STOCK' ? '/stocks' : '/crypto'}?${params}`;
 }
 
 export function GlobalSearch({
@@ -58,7 +59,10 @@ export function GlobalSearch({
     }, [normalized, open, retry]);
 
     const loading = search.query !== normalized;
-    const results = loading ? [] : search.items;
+    const localStocks = demoStocks.filter(item =>
+        `${item.koreanName} ${item.englishName} ${item.symbol}`.toLowerCase().includes(normalized)
+    );
+    const results = [...localStocks, ...(loading ? [] : search.items)];
     const error = loading ? undefined : search.error;
 
     function selectMarket(symbol: string) {
@@ -95,8 +99,8 @@ export function GlobalSearch({
             <label className="global-search">
                 <Icon name="search" size={18} />
                 <input
-                    aria-label="코인 검색"
-                    placeholder="코인 이름 또는 코드 검색"
+                    aria-label="종목 검색"
+                    placeholder="코인·주식 이름 또는 코드 검색"
                     value={query}
                     autoComplete="off"
                     aria-controls={open && normalized ? 'global-search-results' : undefined}
