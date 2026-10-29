@@ -146,9 +146,9 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
             series.current?.update(last.current);
         }
         if (!fitted.current && values.length) {
-            // 수집 직후 1~2개 봉도 최소 60개 슬롯에 표시해 과도한 확대를 방지합니다.
+            // 수집 직후 1~2개 봉도 최소 40개 슬롯에 표시해 과도한 확대를 방지합니다.
             chart.current?.timeScale().setVisibleLogicalRange({
-                from: Math.min(0, values.length - 60),
+                from: Math.min(0, values.length - 40),
                 to: values.length + 3,
             });
             fitted.current = true;
