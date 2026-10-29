@@ -45,7 +45,38 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
             height: 380,
             layout: { background: { color: '#ffffff' }, textColor: '#667085' },
             grid: { vertLines: { color: '#f2f4f7' }, horzLines: { color: '#f2f4f7' } },
-            timeScale: { timeVisible: true, secondsVisible: false },
+            localization: {
+                locale: 'ko-KR',
+                timeFormatter: (time: Time) =>
+                    typeof time === 'number'
+                        ? new Date(time * 1000).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+                        : typeof time === 'string'
+                          ? time
+                          : `${time.year}-${time.month}-${time.day}`,
+                priceFormatter: (price: number) =>
+                    price.toLocaleString('ko-KR', { maximumFractionDigits: 8 }),
+            },
+            timeScale: {
+                timeVisible: true,
+                secondsVisible: false,
+                tickMarkFormatter: (time: Time, type: number) => {
+                    if (typeof time !== 'number')
+                        return typeof time === 'string' ? time : `${time.month}/${time.day}`;
+                    const date = new Date(time * 1000);
+                    return type >= 3
+                        ? date.toLocaleTimeString('ko-KR', {
+                              timeZone: 'Asia/Seoul',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                          })
+                        : date.toLocaleDateString('ko-KR', {
+                              timeZone: 'Asia/Seoul',
+                              month: 'numeric',
+                              day: 'numeric',
+                          });
+                },
+            },
         });
         chart.current = instance;
         series.current = instance.addSeries(CandlestickSeries, {
@@ -58,6 +89,8 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
         volumes.current = instance.addSeries(HistogramSeries, {
             priceFormat: { type: 'volume' },
             priceScaleId: 'volume',
+            lastValueVisible: false,
+            priceLineVisible: false,
         });
         instance.priceScale('volume').applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
         markers.current = createSeriesMarkers(series.current, []);
@@ -104,7 +137,11 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
             series.current?.update(last.current);
         }
         if (!fitted.current && values.length) {
-            chart.current?.timeScale().fitContent();
+            // 수집 직후 1~2개 봉도 최소 60개 슬롯에 표시해 과도한 확대를 방지합니다.
+            chart.current?.timeScale().setVisibleLogicalRange({
+                from: values.length - Math.max(60, values.length),
+                to: values.length + 3,
+            });
             fitted.current = true;
         }
     }, [candles, interval]);
