@@ -1910,7 +1910,7 @@ body,
     justify-content: center;
     min-height: 42px;
     padding: 9px 16px;
-    border: 1px solid #e4e7ec;
+    border: 0;
     border-radius: 10px;
     background: #f5f6f8;
     color: #475467;
@@ -1923,11 +1923,9 @@ body,
 }
 .stock-panel > .periods[aria-label='주식 선택'] > a:hover {
     background: #eaf0f9;
-    border-color: #b9ccef;
 }
 .stock-panel > .periods[aria-label='주식 선택'] > a[aria-current='page'] {
     background: #3182f6;
-    border-color: #3182f6;
     color: #fff;
 }
 .stock-panel > .periods[aria-label='주식 선택'] > a:focus-visible {
