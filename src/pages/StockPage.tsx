@@ -84,6 +84,20 @@ function StockWorkspace({ code, name, token }: { code: string; name: string; tok
                 </div>
                 <div className="price-heading">
                     {now ? `₩${formatNumber(now.price)}` : '현재가 —'}
+                    {now?.changeRate != null && (
+                        <span
+                            className={
+                                now.changeRate > 0
+                                    ? 'positive'
+                                    : now.changeRate < 0
+                                      ? 'negative'
+                                      : ''
+                            }
+                        >
+                            {now.changeRate > 0 ? '+' : ''}
+                            {(now.changeRate * 100).toFixed(2)}% <small>전일 대비</small>
+                        </span>
+                    )}
                 </div>
             </div>
             {!now && !price.error && <p role="status">현재가를 불러오는 중…</p>}

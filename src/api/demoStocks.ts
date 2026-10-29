@@ -34,7 +34,10 @@ function requireStock(code: string) {
 
 export async function getDemoStockPrice(code: string, token: string, signal: AbortSignal) {
     requireStock(code);
-    const data = await apiClient<CollectedPrice>(`demo/stocks/${code}/price`, { token, signal });
+    const data = await apiClient<CollectedPrice & { changeRate?: number | null }>(
+        `demo/stocks/${code}/price`,
+        { token, signal }
+    );
     if (
         data.symbol !== code ||
         !Number.isFinite(data.price) ||
@@ -44,6 +47,8 @@ export async function getDemoStockPrice(code: string, token: string, signal: Abo
         typeof data.stale !== 'boolean'
     )
         throw new Error('주식 현재가 응답을 확인할 수 없어요.');
+    if (data.changeRate != null && !Number.isFinite(data.changeRate))
+        throw new Error('주식 등락률 응답을 확인할 수 없어요.');
     return data;
 }
 

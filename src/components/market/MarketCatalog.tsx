@@ -250,8 +250,7 @@ export function MarketCatalog() {
             )}
             <p className="ranking-disclaimer">
                 국내 주식 현재가는 로그인 후 조회합니다. 서버 수집 대상이 아닌 종목은 시세가 없을 수
-                있어요. 국내 주식은 등락률·시장 상태·AI 신호가 미제공되어 해당 필터 적용 시
-                제외됩니다.
+                있어요. 국내 주식은 시장 상태·AI 신호가 미제공되어 해당 필터 적용 시 제외됩니다.
             </p>
         </section>
     );
@@ -266,7 +265,12 @@ function DomesticStockRow({
     token?: string;
     dashboard: ReturnType<typeof useDashboardContext>;
 }) {
-    const [quote, setQuote] = useState<{ price?: number; stale?: boolean; error?: boolean }>({});
+    const [quote, setQuote] = useState<{
+        price?: number;
+        stale?: boolean;
+        error?: boolean;
+        changeRate?: number | null;
+    }>({});
     useEffect(() => {
         if (!token) return;
         const controller = new AbortController();
@@ -275,7 +279,11 @@ function DomesticStockRow({
             try {
                 const price = await getDemoStockPrice(stock.symbol, token!, controller.signal);
                 if (!controller.signal.aborted)
-                    setQuote({ price: price.price, stale: price.stale });
+                    setQuote({
+                        price: price.price,
+                        stale: price.stale,
+                        changeRate: price.changeRate,
+                    });
             } catch {
                 if (!controller.signal.aborted)
                     setQuote(previous => ({ ...previous, error: true }));
@@ -323,7 +331,19 @@ function DomesticStockRow({
                         ? '시세 수집 대기'
                         : '조회 중…'}
             </td>
-            <td>—</td>
+            <td
+                className={
+                    quote.changeRate != null && quote.changeRate > 0
+                        ? 'positive'
+                        : quote.changeRate != null && quote.changeRate < 0
+                          ? 'negative'
+                          : ''
+                }
+            >
+                {quote.changeRate == null
+                    ? '—'
+                    : `${quote.changeRate > 0 ? '+' : ''}${(quote.changeRate * 100).toFixed(2)}%`}
+            </td>
             <td>미제공</td>
             <td>미제공</td>
             <td>—</td>

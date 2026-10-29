@@ -12,7 +12,7 @@ let request, mode='ok';
 globalThis.fetch=async (url,options)=>{
  request={url,options};
  if(mode==='unavailable' && url.endsWith('/price')) return new Response(JSON.stringify({error:'COLLECTOR_UNAVAILABLE'}),{status:503});
- return new Response(JSON.stringify({data:url.endsWith('/price') ? (mode==='invalid' ? {...price,symbol:'KRW-BTC'}:price) : {symbol:'005930',interval:'1m',candles:mode==='empty'?[]:[bar]}}));
+ return new Response(JSON.stringify({data:url.endsWith('/price') ? (mode==='invalid' ? {...price,symbol:'KRW-BTC'}:mode==='rate' ? {...price,changeRate:-0.0125}:price) : {symbol:'005930',interval:'1m',candles:mode==='empty'?[]:[bar]}}));
 };
 const signal=new AbortController().signal;
 assert.equal((await getDemoStockPrice('005930','fake-token',signal)).price,70000);
@@ -22,6 +22,7 @@ assert.equal((await getDemoStockCandles('005930','fake-token',signal))[0].close,
 assert.equal(request.url,'/api/demo/stocks/005930/candles?interval=1m&limit=300');
 assert.equal(request.options.headers.Authorization,'Bearer fake-token');
 await assert.rejects(getDemoStockPrice('KRW-BTC','fake-token',signal));
+mode='rate'; assert.equal((await getDemoStockPrice('005930','fake-token',signal)).changeRate,-0.0125);
 mode='invalid'; await assert.rejects(getDemoStockPrice('005930','fake-token',signal));
 mode='empty'; assert.deepEqual(await getDemoStockCandles('005930','fake-token',signal),[]);
 // 훅의 실제 비동기 흐름을 검증하되 타이머와 React 스케줄러만 대체합니다.
