@@ -11,16 +11,16 @@ const LiveCandleChart = lazy(() =>
     }))
 );
 
-export function StockPage() {
+export function StockPage({ embedded = false }: { embedded?: boolean }) {
     const session = useAuthSession();
     const [params] = useSearchParams();
-    const code = params.get('symbol') ?? demoStocks[0].symbol;
+    const code = (embedded ? undefined : params.get('symbol')) ?? demoStocks[0].symbol;
     const stock = demoStocks.find(item => item.symbol === code);
     return (
         <section className="panel chart-panel crypto-panel">
             <div className="section-heading">
                 <div>
-                    <h1>국내 주식 시세</h1>
+                    {embedded ? <h2>국내 주식 시세</h2> : <h1>국내 주식 시세</h1>}
                     <p>키움 데모 · 1분봉 · 10초마다 갱신</p>
                 </div>
             </div>
