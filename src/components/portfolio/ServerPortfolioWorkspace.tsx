@@ -134,6 +134,7 @@ function ServerAccount({ token, initialSymbol }: { token: string; initialSymbol:
                     totalEvaluationAmount: 0,
                     totalProfitLoss: 0,
                     totalReturnRate: 0,
+                    pricesComplete: true,
                     holdings: [],
                 },
                 revision: revision + 1,
@@ -208,6 +209,13 @@ function ServerAccount({ token, initialSymbol }: { token: string; initialSymbol:
             )}
             {data && (
                 <>
+                    {(!data.pricesComplete || data.holdings.some(item => !item.priceAvailable)) && (
+                        <p className="demo-notice" role="status">
+                            일부 종목의 최신 시세를 가져오지 못해 평균 매수가로 평가했습니다. 총
+                            자산·평가액·평가손익·수익률에 대체 가격이 반영되어 있으며, 실제 현재
+                            시세 기준 값과 다를 수 있어요.
+                        </p>
+                    )}
                     <section className="account-summary" aria-label="서버 모의 계좌 요약">
                         {[
                             ['총 자산', money(data.totalAssetAmount)],
@@ -269,7 +277,23 @@ function ServerAccount({ token, initialSymbol }: { token: string; initialSymbol:
                                                         })}
                                                     </td>
                                                     <td>{money(item.averagePurchasePrice)}</td>
-                                                    <td>{money(item.currentPrice)}</td>
+                                                    <td>
+                                                        {item.priceAvailable ? (
+                                                            money(item.currentPrice)
+                                                        ) : (
+                                                            <>
+                                                                <span>시세 없음</span>
+                                                                <br />
+                                                                <small>
+                                                                    평균 매수가{' '}
+                                                                    {money(
+                                                                        item.averagePurchasePrice
+                                                                    )}
+                                                                    로 평가
+                                                                </small>
+                                                            </>
+                                                        )}
+                                                    </td>
                                                     <td>{money(item.evaluationAmount)}</td>
                                                     <td>
                                                         {money(item.profitLoss)} ·{' '}
