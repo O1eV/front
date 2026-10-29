@@ -1,3 +1,4 @@
+import { demoStocks, getDemoStockPrice } from '../../api/demoStocks';
 import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -35,7 +36,10 @@ export function MarketCatalog() {
     useEffect(() => {
         const controller = new AbortController();
 
-        getMarkets({ ...filters, signal: activeSignal }, controller.signal, token)
+        (filters.assetClass === 'KR_STOCK'
+            ? Promise.resolve({ items: [], page: 0, size: 20, totalElements: 0 } as MarketList)
+            : getMarkets({ ...filters, signal: activeSignal }, controller.signal, token)
+        )
             .then(data => {
                 if (!controller.signal.aborted) setResult({ key, data });
             })
@@ -56,19 +60,23 @@ export function MarketCatalog() {
 
     const current = result?.key === key ? result : undefined;
     const data = current?.data;
+    const stocks =
+        filters.assetClass !== 'COIN' && !filters.marketState && !activeSignal && filters.page === 0
+            ? demoStocks
+            : [];
     const totalPages = data ? Math.ceil(data.totalElements / data.size) : 0;
 
     return (
         <section className="market-ranking" aria-label="종목 목록">
             <div className="ranking-heading">
                 <h2>종목 둘러보기</h2>
-                <span>{data ? `${data.totalElements}개 종목` : '종목 목록'}</span>
+                <span>{data ? `${data.totalElements + stocks.length}개 종목` : '종목 목록'}</span>
             </div>
 
             <div className="catalog-filters">
                 {(
                     [
-                        ['assetClass', '자산군', { COIN: assets.COIN }],
+                        ['assetClass', '자산군', { COIN: assets.COIN, KR_STOCK: assets.KR_STOCK }],
                         ['marketState', '시장 상태', states],
                         ['signal', '신호 유형', signals],
                     ] as const
@@ -126,6 +134,14 @@ export function MarketCatalog() {
                                 </tr>
                             </thead>
                             <tbody>
+                                {stocks.map(stock => (
+                                    <DomesticStockRow
+                                        key={`${session?.user.userId}:${token}:${stock.symbol}`}
+                                        stock={stock}
+                                        token={token}
+                                        dashboard={dashboard}
+                                    />
+                                ))}
                                 {data.items.map(market => (
                                     <tr key={market.symbol}>
                                         <td>
@@ -196,7 +212,7 @@ export function MarketCatalog() {
                             </tbody>
                         </table>
                     </div>
-                    {!data.items.length && (
+                    {!data.items.length && !stocks.length && (
                         <p className="no-results" role="status">
                             조건에 맞는 종목이 없어요.
                         </p>
@@ -233,9 +249,84 @@ export function MarketCatalog() {
                 </>
             )}
             <p className="ranking-disclaimer">
-                코인 3종을 지원합니다. 국내 주식은 위 키움 데모 화면에서 확인할 수 있어요. 해외
-                주식은 아직 제공하지 않습니다. AI 신호와 확신도는 로그인 후 확인할 수 있어요.
+                국내 주식 현재가는 로그인 후 조회합니다. 서버 수집 대상이 아닌 종목은 시세가 없을 수
+                있어요. 국내 주식은 등락률·시장 상태·AI 신호가 미제공되어 해당 필터 적용 시
+                제외됩니다.
             </p>
         </section>
+    );
+}
+
+function DomesticStockRow({
+    stock,
+    token,
+    dashboard,
+}: {
+    stock: (typeof demoStocks)[number];
+    token?: string;
+    dashboard: ReturnType<typeof useDashboardContext>;
+}) {
+    const [quote, setQuote] = useState<{ price?: number; stale?: boolean; error?: boolean }>({});
+    useEffect(() => {
+        if (!token) return;
+        const controller = new AbortController();
+        let timer: ReturnType<typeof setTimeout>;
+        async function load() {
+            try {
+                const price = await getDemoStockPrice(stock.symbol, token!, controller.signal);
+                if (!controller.signal.aborted)
+                    setQuote({ price: price.price, stale: price.stale });
+            } catch {
+                if (!controller.signal.aborted)
+                    setQuote(previous => ({ ...previous, error: true }));
+            } finally {
+                if (!controller.signal.aborted) timer = setTimeout(load, 10000);
+            }
+        }
+        void load();
+        return () => {
+            controller.abort();
+            clearTimeout(timer);
+        };
+    }, [stock.symbol, token]);
+    const favorite = dashboard.favoriteSymbols.includes(stock.symbol);
+    return (
+        <tr>
+            <td>
+                <button
+                    type="button"
+                    className={`star-button ${favorite ? 'is-favorite' : ''}`}
+                    aria-label={`${stock.koreanName} 관심 ${favorite ? '해제' : '등록'}`}
+                    aria-pressed={favorite}
+                    disabled={
+                        dashboard.watchlistLoading || dashboard.isWatchlistPending(stock.symbol)
+                    }
+                    onClick={() => void dashboard.toggleFavorite(stock.symbol)}
+                >
+                    ★
+                </button>
+            </td>
+            <td>
+                <Link className="rank-stock" to={`/stocks?symbol=${stock.symbol}`}>
+                    <span>
+                        <strong>{stock.koreanName}</strong>
+                        <small>{stock.symbol} · 국내 주식</small>
+                    </span>
+                </Link>
+            </td>
+            <td>
+                {!token
+                    ? '로그인 필요'
+                    : quote.price != null
+                      ? `${formatNumber(quote.price)}원${quote.error || quote.stale ? ' (이전 수신)' : ''}`
+                      : quote.error
+                        ? '시세 수집 대기'
+                        : '조회 중…'}
+            </td>
+            <td>—</td>
+            <td>미제공</td>
+            <td>미제공</td>
+            <td>—</td>
+        </tr>
     );
 }
