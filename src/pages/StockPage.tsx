@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { demoStocks } from '../api/demoStocks';
 import { useAuthSession } from '../lib/auth';
@@ -15,7 +15,8 @@ const LiveCandleChart = lazy(() =>
 export function StockPage({ embedded = false }: { embedded?: boolean }) {
     const session = useAuthSession();
     const [params] = useSearchParams();
-    const code = (embedded ? undefined : params.get('symbol')) ?? demoStocks[0].symbol;
+    const [marketSymbol, setMarketSymbol] = useState(demoStocks[0].symbol);
+    const code = (embedded ? marketSymbol : params.get('symbol')) ?? demoStocks[0].symbol;
     const stock =
         demoStocks.find(item => item.symbol === code) ??
         (/^\d{6}$/.test(code) ? { symbol: code, koreanName: `국내 주식 ${code}` } : undefined);
@@ -29,9 +30,18 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
                     <p>키움 데모 · 1분봉 · 10초마다 갱신</p>
                 </div>
             </div>
-            {!embedded && (
-                <div className="periods" aria-label="주식 선택">
-                    {demoStocks.map(item => (
+            <div className="periods" aria-label="주식 선택">
+                {demoStocks.map(item =>
+                    embedded ? (
+                        <button
+                            type="button"
+                            key={item.symbol}
+                            aria-pressed={item.symbol === code}
+                            onClick={() => setMarketSymbol(item.symbol)}
+                        >
+                            {item.koreanName}
+                        </button>
+                    ) : (
                         <Link
                             key={item.symbol}
                             to={`/stocks?symbol=${item.symbol}`}
@@ -39,9 +49,9 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
                         >
                             {item.koreanName}
                         </Link>
-                    ))}
-                </div>
-            )}
+                    )
+                )}
+            </div>
             {!stock ? (
                 <p role="alert">지원하지 않는 데모 종목이에요. 6자리 종목코드를 확인해주세요.</p>
             ) : !session ? (

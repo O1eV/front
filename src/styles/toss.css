@@ -1904,7 +1904,7 @@ body,
     gap: 10px;
     margin: 12px 0 24px;
 }
-.stock-panel > .periods[aria-label='주식 선택'] > a {
+.stock-panel > .periods[aria-label='주식 선택'] > :is(a, button) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1921,14 +1921,16 @@ body,
         background-color 0.15s,
         border-color 0.15s;
 }
-.stock-panel > .periods[aria-label='주식 선택'] > a:hover {
+.stock-panel > .periods[aria-label='주식 선택'] > :is(a, button):hover {
     background: #eaf0f9;
 }
-.stock-panel > .periods[aria-label='주식 선택'] > a[aria-current='page'] {
+.stock-panel
+    > .periods[aria-label='주식 선택']
+    > :is(a, button):is([aria-current='page'], [aria-pressed='true']) {
     background: #3182f6;
     color: #fff;
 }
-.stock-panel > .periods[aria-label='주식 선택'] > a:focus-visible {
+.stock-panel > .periods[aria-label='주식 선택'] > :is(a, button):focus-visible {
     outline: 3px solid #9fc5ff;
     outline-offset: 3px;
 }
