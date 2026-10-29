@@ -108,3 +108,9 @@ MVP는 국내 주식(코스피·코스닥)을 대상으로 합니다. 종목코�
 Authorization 헤더가 유지되어야 합니다. 수집 전 구간이나 장 마감에는 데이터가
 없을 수 있습니다. 이 PR은 AWS 설정이나 배포를 변경하지 않습니다.
 검증: `node scripts/test-demo-stocks.mjs`.
+
+로컬 개발 프록시는 기본적으로 AWS CloudFront 백엔드를 사용합니다.
+`VITE_API_BASE_URL=/api`, `VITE_WS_URL`은 비워 둔 채 개발 서버를 실행하세요.
+`DEV_PROXY_TARGET=http://localhost:8080`으로 로컬 백엔드로 전환할 수 있습니다.
+프록시는 Origin 검사를 우회하지 않습니다. AWS 서버가 로컬 Origin을 거부하면
+서버의 허용 Origin에 `http://localhost:5173`을 추가해야 합니다.
