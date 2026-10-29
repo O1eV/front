@@ -98,19 +98,50 @@ function StockWorkspace({ code, name, token }: { code: string; name: string; tok
                 </p>
             )}
             {candles.error && <p role="alert">{candles.error}</p>}
-            {candles.data?.length ? (
-                <Suspense fallback={<p role="status">차트를 준비하는 중…</p>}>
-                    <LiveCandleChart candles={candles.data} interval="1m" />
-                </Suspense>
-            ) : (
-                <p className="no-results" role="status">
-                    {candles.data
-                        ? '저장된 1분봉이 없어요. 장 마감 또는 수집 전에는 데이터가 없을 수 있어요.'
-                        : candles.error
-                          ? '차트를 불러오지 못했어요.'
-                          : '1분봉을 불러오는 중…'}
-                </p>
-            )}
+            <div className="chart-ai-layout">
+                <div className="chart-ai-chart">
+                    {candles.data?.length ? (
+                        <Suspense fallback={<p role="status">차트를 준비하는 중…</p>}>
+                            <LiveCandleChart candles={candles.data} interval="1m" />
+                        </Suspense>
+                    ) : (
+                        <p className="no-results" role="status">
+                            {candles.data
+                                ? '저장된 1분봉이 없어요. 장 마감 또는 수집 전에는 데이터가 없을 수 있어요.'
+                                : candles.error
+                                  ? '차트를 불러오지 못했어요.'
+                                  : '1분봉을 불러오는 중…'}
+                        </p>
+                    )}
+                </div>
+                <aside className="panel chart-ai-panel" aria-label="국내 주식 AI 판단">
+                    <span className="chart-ai-eyebrow">AI INSIGHT</span>
+                    <h2>AI 판단</h2>
+                    <span className="chart-ai-status">분석 준비 중</span>
+                    <p>
+                        국내 주식 AI 분석은 아직 제공되지 않아요. 분석이 연결되면 매수·관망·매도
+                        확률과 확신도를 보여드릴게요.
+                    </p>
+                    <dl className="chart-ai-placeholder">
+                        <div>
+                            <dt>매수</dt>
+                            <dd>—</dd>
+                        </div>
+                        <div>
+                            <dt>관망</dt>
+                            <dd>—</dd>
+                        </div>
+                        <div>
+                            <dt>매도</dt>
+                            <dd>—</dd>
+                        </div>
+                        <div>
+                            <dt>확신도</dt>
+                            <dd>—</dd>
+                        </div>
+                    </dl>
+                </aside>
+            </div>
             {candles.updatedAt && (
                 <p className="crypto-source">
                     1분봉 마지막 조회 {new Date(candles.updatedAt).toLocaleTimeString('ko-KR')}

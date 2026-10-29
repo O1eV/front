@@ -114,7 +114,6 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
             </div>
 
             <RealtimePanel />
-            <LatestSignalPanel key={symbol} symbol={symbol} onLatest={setLatestSignal} />
 
             <div className="periods" aria-label="코인 선택">
                 {coinMarkets.map(coin => (
@@ -211,24 +210,33 @@ function CryptoWorkspace({ initialSymbol }: { initialSymbol: string }) {
                         </div>
                     </div>
 
-                    <Suspense fallback={<p role="status">차트를 준비하는 중…</p>}>
-                        <LiveCandleChart
-                            key={key}
-                            candles={data.candles}
-                            interval={interval}
-                            tick={realtime?.price}
-                            signal={
-                                session
-                                    ? realtime?.signal &&
-                                      (!latestSignal ||
-                                          Date.parse(realtime.signal.generatedAt) >=
-                                              Date.parse(latestSignal.generatedAt))
-                                        ? realtime.signal
-                                        : latestSignal
-                                    : undefined
-                            }
+                    <div className="chart-ai-layout">
+                        <div className="chart-ai-chart">
+                            <Suspense fallback={<p role="status">차트를 준비하는 중…</p>}>
+                                <LiveCandleChart
+                                    key={key}
+                                    candles={data.candles}
+                                    interval={interval}
+                                    tick={realtime?.price}
+                                    signal={
+                                        session
+                                            ? realtime?.signal &&
+                                              (!latestSignal ||
+                                                  Date.parse(realtime.signal.generatedAt) >=
+                                                      Date.parse(latestSignal.generatedAt))
+                                                ? realtime.signal
+                                                : latestSignal
+                                            : undefined
+                                    }
+                                />
+                            </Suspense>{' '}
+                        </div>
+                        <LatestSignalPanel
+                            key={symbol}
+                            symbol={symbol}
+                            onLatest={setLatestSignal}
                         />
-                    </Suspense>
+                    </div>
 
                     <div className="chart-stats">
                         <div>
