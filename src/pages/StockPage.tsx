@@ -1,6 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { demoStocks } from '../api/demoStocks';
+import { demoStocks, isKrStockCode } from '../api/demoStocks';
 import { useAuthSession } from '../lib/auth';
 import { useDemoStock } from '../hooks/useDemoStock';
 import { useDashboardContext } from '../hooks/useDashboardContext';
@@ -15,8 +15,11 @@ const LiveCandleChart = lazy(() =>
 export function StockPage({ embedded = false }: { embedded?: boolean }) {
     const session = useAuthSession();
     const [params] = useSearchParams();
-    const code = (embedded ? undefined : params.get('symbol')) ?? demoStocks[0].symbol;
-    const stock = demoStocks.find(item => item.symbol === code);
+    const [marketSymbol, setMarketSymbol] = useState(demoStocks[0].symbol);
+    const code = (embedded ? marketSymbol : params.get('symbol')) ?? demoStocks[0].symbol;
+    const stock =
+        demoStocks.find(item => item.symbol === code) ??
+        (isKrStockCode(code) ? { symbol: code, koreanName: `국내 주식 ${code}` } : undefined);
     return (
         <section
             className={`panel chart-panel crypto-panel stock-panel${embedded ? ' stock-panel-embedded' : ''}`}
@@ -27,9 +30,18 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
                     <p>키움 데모 · 1분봉 · 10초마다 갱신</p>
                 </div>
             </div>
-            {!embedded && (
-                <div className="periods" aria-label="주식 선택">
-                    {demoStocks.map(item => (
+            <div className="periods" aria-label="주식 선택">
+                {demoStocks.map(item =>
+                    embedded ? (
+                        <button
+                            type="button"
+                            key={item.symbol}
+                            aria-pressed={item.symbol === code}
+                            onClick={() => setMarketSymbol(item.symbol)}
+                        >
+                            {item.koreanName}
+                        </button>
+                    ) : (
                         <Link
                             key={item.symbol}
                             to={`/stocks?symbol=${item.symbol}`}
@@ -37,11 +49,11 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
                         >
                             {item.koreanName}
                         </Link>
-                    ))}
-                </div>
-            )}
+                    )
+                )}
+            </div>
             {!stock ? (
-                <p role="alert">지원하지 않는 데모 종목이에요. 삼성전자를 선택해주세요.</p>
+                <p role="alert">지원하지 않는 데모 종목이에요. 6자리 종목코드를 확인해주세요.</p>
             ) : !session ? (
                 <p className="no-results">
                     <Link to="/login">로그인</Link> 후 국내 주식 데모 시세와 차트를 볼 수 있어요.
@@ -82,6 +94,20 @@ function StockWorkspace({ code, name, token }: { code: string; name: string; tok
                 </div>
                 <div className="price-heading">
                     {now ? `₩${formatNumber(now.price)}` : '현재가 —'}
+                    {now?.changeRate != null && (
+                        <span
+                            className={
+                                now.changeRate > 0
+                                    ? 'positive'
+                                    : now.changeRate < 0
+                                      ? 'negative'
+                                      : ''
+                            }
+                        >
+                            {now.changeRate > 0 ? '+' : ''}
+                            {(now.changeRate * 100).toFixed(2)}% <small>전일 대비</small>
+                        </span>
+                    )}
                 </div>
             </div>
             {!now && !price.error && <p role="status">현재가를 불러오는 중…</p>}

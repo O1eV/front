@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {
     createChart,
+    TickMarkType,
     CandlestickSeries,
     HistogramSeries,
     createSeriesMarkers,
@@ -13,6 +14,23 @@ import {
 } from 'lightweight-charts';
 import type { Candle } from '../../data/candles';
 import type { PriceEvent } from '../../api/realtime';
+
+const kstDateTime = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    dateStyle: 'short',
+    timeStyle: 'medium',
+});
+const kstTime = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+});
+const kstDate = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    month: 'numeric',
+    day: 'numeric',
+});
 
 const candleSeconds = { '1m': 60, '5m': 300, '15m': 900, '1h': 3600, '1d': 86400 };
 export type CandleInterval = keyof typeof candleSeconds;
@@ -45,7 +63,29 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
             height: 380,
             layout: { background: { color: '#ffffff' }, textColor: '#667085' },
             grid: { vertLines: { color: '#f2f4f7' }, horzLines: { color: '#f2f4f7' } },
-            timeScale: { timeVisible: true, secondsVisible: false },
+            localization: {
+                locale: 'ko-KR',
+                timeFormatter: (time: Time) =>
+                    typeof time === 'number'
+                        ? kstDateTime.format(new Date(time * 1000))
+                        : typeof time === 'string'
+                          ? time
+                          : `${time.year}-${time.month}-${time.day}`,
+                priceFormatter: (price: number) =>
+                    price.toLocaleString('ko-KR', { maximumFractionDigits: 8 }),
+            },
+            timeScale: {
+                timeVisible: true,
+                secondsVisible: false,
+                tickMarkFormatter: (time: Time, type: TickMarkType) => {
+                    if (typeof time !== 'number')
+                        return typeof time === 'string' ? time : `${time.month}/${time.day}`;
+                    const date = new Date(time * 1000);
+                    return type === TickMarkType.Time || type === TickMarkType.TimeWithSeconds
+                        ? kstTime.format(date)
+                        : kstDate.format(date);
+                },
+            },
         });
         chart.current = instance;
         series.current = instance.addSeries(CandlestickSeries, {
@@ -58,6 +98,8 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
         volumes.current = instance.addSeries(HistogramSeries, {
             priceFormat: { type: 'volume' },
             priceScaleId: 'volume',
+            lastValueVisible: false,
+            priceLineVisible: false,
         });
         instance.priceScale('volume').applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
         markers.current = createSeriesMarkers(series.current, []);
@@ -104,7 +146,11 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
             series.current?.update(last.current);
         }
         if (!fitted.current && values.length) {
-            chart.current?.timeScale().fitContent();
+            // 수집 직후 1~2개 봉도 최소 60개 슬롯에 표시해 과도한 확대를 방지합니다.
+            chart.current?.timeScale().setVisibleLogicalRange({
+                from: Math.min(0, values.length - 60),
+                to: values.length + 3,
+            });
             fitted.current = true;
         }
     }, [candles, interval]);
