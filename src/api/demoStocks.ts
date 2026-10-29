@@ -8,11 +8,28 @@ export const demoStocks = [
         englishName: 'Samsung Electronics',
         assetClass: 'KR_STOCK' as const,
     },
+    {
+        symbol: '000660',
+        koreanName: 'SK하이닉스',
+        englishName: 'SK hynix',
+        assetClass: 'KR_STOCK' as const,
+    },
+    {
+        symbol: '035420',
+        koreanName: 'NAVER · 네이버',
+        englishName: 'NAVER',
+        assetClass: 'KR_STOCK' as const,
+    },
+    {
+        symbol: '247540',
+        koreanName: '에코프로비엠',
+        englishName: 'Ecopro BM',
+        assetClass: 'KR_STOCK' as const,
+    },
 ];
 
 function requireStock(code: string) {
-    if (!demoStocks.some(stock => stock.symbol === code))
-        throw new Error('지원하지 않는 데모 종목입니다.');
+    if (!/^\d{6}$/.test(code)) throw new Error('지원하지 않는 데모 종목입니다.');
 }
 
 export async function getDemoStockPrice(code: string, token: string, signal: AbortSignal) {

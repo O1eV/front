@@ -65,6 +65,7 @@ export function useWatchlist(notify: (message: string) => void) {
             return;
         }
         if (
+            !/^\d{6}$/.test(symbol) &&
             !['KRW-BTC', 'KRW-ETH', 'KRW-XRP', ...demoStocks.map(stock => stock.symbol)].includes(
                 symbol
             )

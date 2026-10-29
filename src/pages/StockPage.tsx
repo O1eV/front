@@ -16,7 +16,9 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
     const session = useAuthSession();
     const [params] = useSearchParams();
     const code = (embedded ? undefined : params.get('symbol')) ?? demoStocks[0].symbol;
-    const stock = demoStocks.find(item => item.symbol === code);
+    const stock =
+        demoStocks.find(item => item.symbol === code) ??
+        (/^\d{6}$/.test(code) ? { symbol: code, koreanName: `국내 주식 ${code}` } : undefined);
     return (
         <section
             className={`panel chart-panel crypto-panel stock-panel${embedded ? ' stock-panel-embedded' : ''}`}
@@ -41,7 +43,7 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
                 </div>
             )}
             {!stock ? (
-                <p role="alert">지원하지 않는 데모 종목이에요. 삼성전자를 선택해주세요.</p>
+                <p role="alert">지원하지 않는 데모 종목이에요. 6자리 종목코드를 확인해주세요.</p>
             ) : !session ? (
                 <p className="no-results">
                     <Link to="/login">로그인</Link> 후 국내 주식 데모 시세와 차트를 볼 수 있어요.

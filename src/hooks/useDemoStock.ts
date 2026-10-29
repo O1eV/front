@@ -16,7 +16,7 @@ function describeError(error: unknown) {
         if (error.status === 401) return '로그인이 만료됐어요. 다시 로그인해주세요.';
         if (error.status === 403) return '데모 주식 시세 조회 권한을 확인해주세요.';
         if (error.status === 404)
-            return '이 서버에서 데모 주식 API 또는 해당 종목을 제공하지 않아요.';
+            return '서버 수집 목록에 없는 종목이거나 데모 API가 꺼져 있어요. 서버 KIWOOM_SYMBOLS 설정이 필요합니다.';
         if (error.code === 'COLLECTOR_UNAVAILABLE' || error.status === 503)
             return '시세 수집 대기 중이에요. 장 마감 또는 수집 전에는 데이터가 없을 수 있어요.';
     }

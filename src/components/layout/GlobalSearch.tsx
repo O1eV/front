@@ -62,7 +62,18 @@ export function GlobalSearch({
     const localStocks = demoStocks.filter(item =>
         `${item.koreanName} ${item.englishName} ${item.symbol}`.toLowerCase().includes(normalized)
     );
-    const results = [...localStocks, ...(loading ? [] : search.items)];
+    const codeResult =
+        /^\d{6}$/.test(normalized) && !localStocks.length
+            ? [
+                  {
+                      symbol: normalized,
+                      koreanName: `국내 주식 ${normalized}`,
+                      englishName: '',
+                      assetClass: 'KR_STOCK' as const,
+                  },
+              ]
+            : [];
+    const results = [...localStocks, ...codeResult, ...(loading ? [] : search.items)];
     const error = loading ? undefined : search.error;
 
     function selectMarket(symbol: string) {
