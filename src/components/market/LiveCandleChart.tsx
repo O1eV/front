@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {
     createChart,
+    TickMarkType,
     CandlestickSeries,
     HistogramSeries,
     createSeriesMarkers,
@@ -13,6 +14,23 @@ import {
 } from 'lightweight-charts';
 import type { Candle } from '../../data/candles';
 import type { PriceEvent } from '../../api/realtime';
+
+const kstDateTime = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    dateStyle: 'short',
+    timeStyle: 'medium',
+});
+const kstTime = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+});
+const kstDate = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    month: 'numeric',
+    day: 'numeric',
+});
 
 const candleSeconds = { '1m': 60, '5m': 300, '15m': 900, '1h': 3600, '1d': 86400 };
 export type CandleInterval = keyof typeof candleSeconds;
@@ -49,7 +67,7 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
                 locale: 'ko-KR',
                 timeFormatter: (time: Time) =>
                     typeof time === 'number'
-                        ? new Date(time * 1000).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+                        ? kstDateTime.format(new Date(time * 1000))
                         : typeof time === 'string'
                           ? time
                           : `${time.year}-${time.month}-${time.day}`,
@@ -59,22 +77,13 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
             timeScale: {
                 timeVisible: true,
                 secondsVisible: false,
-                tickMarkFormatter: (time: Time, type: number) => {
+                tickMarkFormatter: (time: Time, type: TickMarkType) => {
                     if (typeof time !== 'number')
                         return typeof time === 'string' ? time : `${time.month}/${time.day}`;
                     const date = new Date(time * 1000);
-                    return type >= 3
-                        ? date.toLocaleTimeString('ko-KR', {
-                              timeZone: 'Asia/Seoul',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              hour12: false,
-                          })
-                        : date.toLocaleDateString('ko-KR', {
-                              timeZone: 'Asia/Seoul',
-                              month: 'numeric',
-                              day: 'numeric',
-                          });
+                    return type === TickMarkType.Time || type === TickMarkType.TimeWithSeconds
+                        ? kstTime.format(date)
+                        : kstDate.format(date);
                 },
             },
         });
@@ -139,7 +148,7 @@ export function LiveCandleChart({ candles, interval, tick, signal }: Props) {
         if (!fitted.current && values.length) {
             // 수집 직후 1~2개 봉도 최소 60개 슬롯에 표시해 과도한 확대를 방지합니다.
             chart.current?.timeScale().setVisibleLogicalRange({
-                from: values.length - Math.max(60, values.length),
+                from: Math.min(0, values.length - 60),
                 to: values.length + 3,
             });
             fitted.current = true;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getDemoStockPrice, demoStocks } from '../../api/demoStocks';
+import { getDemoStockPrice, demoStocks, isKrStockCode } from '../../api/demoStocks';
 import { useAuthSession } from '../../lib/auth';
 import { Link } from 'react-router-dom';
 import type { useDashboard } from '../../hooks/useDashboard';
@@ -36,7 +36,7 @@ export function WatchlistPanel({ dashboard }: { dashboard: ReturnType<typeof use
                 return (
                     <div className="rail-row" key={symbol}>
                         <Link
-                            to={`${/^\d{6}$/.test(symbol) ? '/stocks' : '/crypto'}?symbol=${encodeURIComponent(symbol)}`}
+                            to={`${isKrStockCode(symbol) ? '/stocks' : '/crypto'}?symbol=${encodeURIComponent(symbol)}`}
                         >
                             <span className="rail-stock-name">
                                 {market?.koreanName ??
@@ -44,7 +44,7 @@ export function WatchlistPanel({ dashboard }: { dashboard: ReturnType<typeof use
                                     symbol}
                                 <small>{symbol}</small>
                             </span>
-                            {/^\d{6}$/.test(symbol) ? (
+                            {isKrStockCode(symbol) ? (
                                 <StockWatchPrice symbol={symbol} />
                             ) : (
                                 <span className="rail-price">

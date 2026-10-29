@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { sampleStocks } from '../../data/markets';
 import { searchMarkets, type MarketSearchItem } from '../../api/markets';
-import { demoStocks } from '../../api/demoStocks';
+import { demoStocks, isKrStockCode } from '../../api/demoStocks';
 import { Icon } from '../ui/Icon';
 import '../../styles/navigation-flow.css';
 
@@ -63,7 +63,7 @@ export function GlobalSearch({
         `${item.koreanName} ${item.englishName} ${item.symbol}`.toLowerCase().includes(normalized)
     );
     const codeResult =
-        /^\d{6}$/.test(normalized) && !localStocks.length
+        isKrStockCode(normalized) && !localStocks.length
             ? [
                   {
                       symbol: normalized,

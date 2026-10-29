@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { demoStocks } from '../api/demoStocks';
+import { demoStocks, isKrStockCode } from '../api/demoStocks';
 import { useAuthSession } from '../lib/auth';
 import { useDemoStock } from '../hooks/useDemoStock';
 import { useDashboardContext } from '../hooks/useDashboardContext';
@@ -19,7 +19,7 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
     const code = (embedded ? marketSymbol : params.get('symbol')) ?? demoStocks[0].symbol;
     const stock =
         demoStocks.find(item => item.symbol === code) ??
-        (/^\d{6}$/.test(code) ? { symbol: code, koreanName: `국내 주식 ${code}` } : undefined);
+        (isKrStockCode(code) ? { symbol: code, koreanName: `국내 주식 ${code}` } : undefined);
     return (
         <section
             className={`panel chart-panel crypto-panel stock-panel${embedded ? ' stock-panel-embedded' : ''}`}

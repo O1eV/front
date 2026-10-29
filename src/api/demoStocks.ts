@@ -28,8 +28,10 @@ export const demoStocks = [
     },
 ];
 
+export const isKrStockCode = (code: string) => /^\d{6}$/.test(code);
+
 function requireStock(code: string) {
-    if (!/^\d{6}$/.test(code)) throw new Error('지원하지 않는 데모 종목입니다.');
+    if (!isKrStockCode(code)) throw new Error('지원하지 않는 데모 종목입니다.');
 }
 
 export async function getDemoStockPrice(code: string, token: string, signal: AbortSignal) {

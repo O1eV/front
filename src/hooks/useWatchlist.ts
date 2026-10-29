@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { addWatchlist, getWatchlist, removeWatchlist, type WatchlistItem } from '../api/watchlist';
 import { useAuthSession } from '../lib/auth';
-import { demoStocks } from '../api/demoStocks';
+import { isKrStockCode } from '../api/demoStocks';
 import { ApiError } from '../api/apiClient';
 
 export function useWatchlist(notify: (message: string) => void) {
@@ -64,12 +64,7 @@ export function useWatchlist(notify: (message: string) => void) {
             notify('로그인 후 관심 종목을 관리할 수 있어요.');
             return;
         }
-        if (
-            !/^\d{6}$/.test(symbol) &&
-            !['KRW-BTC', 'KRW-ETH', 'KRW-XRP', ...demoStocks.map(stock => stock.symbol)].includes(
-                symbol
-            )
-        ) {
+        if (!isKrStockCode(symbol) && !['KRW-BTC', 'KRW-ETH', 'KRW-XRP'].includes(symbol)) {
             notify('지원하는 코인과 국내 주식 데모 종목만 등록할 수 있어요.');
             return;
         }

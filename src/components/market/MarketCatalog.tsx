@@ -2,7 +2,8 @@ import { demoStocks, getDemoStockPrice } from '../../api/demoStocks';
 import { useDashboardContext } from '../../hooks/useDashboardContext';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getMarkets, type MarketFilters, type MarketList } from '../../api/markets';
+import type { MarketFilters } from '../../api/markets';
+import { getCatalogPage, type CatalogPage } from '../../api/marketCatalog';
 import { useAuthSession } from '../../lib/auth';
 import { formatNumber } from '../../utils/format';
 import '../../styles/market-catalog.css';
@@ -21,7 +22,7 @@ export function MarketCatalog() {
         page: 0,
     });
     const [retry, setRetry] = useState(0);
-    const [result, setResult] = useState<{ key: string; data?: MarketList; error?: string }>();
+    const [result, setResult] = useState<{ key: string; data?: CatalogPage; error?: string }>();
     const token = session?.accessToken;
     const activeSignal = token ? filters.signal : '';
     const key = JSON.stringify([
@@ -36,10 +37,7 @@ export function MarketCatalog() {
     useEffect(() => {
         const controller = new AbortController();
 
-        (filters.assetClass === 'KR_STOCK'
-            ? Promise.resolve({ items: [], page: 0, size: 20, totalElements: 0 } as MarketList)
-            : getMarkets({ ...filters, signal: activeSignal }, controller.signal, token)
-        )
+        getCatalogPage({ ...filters, signal: activeSignal }, controller.signal, token)
             .then(data => {
                 if (!controller.signal.aborted) setResult({ key, data });
             })
@@ -60,17 +58,14 @@ export function MarketCatalog() {
 
     const current = result?.key === key ? result : undefined;
     const data = current?.data;
-    const stocks =
-        filters.assetClass !== 'COIN' && !filters.marketState && !activeSignal && filters.page === 0
-            ? demoStocks
-            : [];
+    const stocks = data?.stocks ?? [];
     const totalPages = data ? Math.ceil(data.totalElements / data.size) : 0;
 
     return (
         <section className="market-ranking" aria-label="종목 목록">
             <div className="ranking-heading">
                 <h2>종목 둘러보기</h2>
-                <span>{data ? `${data.totalElements + stocks.length}개 종목` : '종목 목록'}</span>
+                <span>{data ? `${data.totalElements}개 종목` : '종목 목록'}</span>
             </div>
 
             <div className="catalog-filters">
