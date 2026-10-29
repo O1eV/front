@@ -1897,3 +1897,40 @@ body,
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+.stock-panel > .periods[aria-label='주식 선택'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 12px 0 24px;
+}
+.stock-panel > .periods[aria-label='주식 선택'] > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 9px 16px;
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    background: #f5f6f8;
+    color: #475467;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        background-color 0.15s,
+        border-color 0.15s;
+}
+.stock-panel > .periods[aria-label='주식 선택'] > a:hover {
+    background: #eaf0f9;
+    border-color: #b9ccef;
+}
+.stock-panel > .periods[aria-label='주식 선택'] > a[aria-current='page'] {
+    background: #3182f6;
+    border-color: #3182f6;
+    color: #fff;
+}
+.stock-panel > .periods[aria-label='주식 선택'] > a:focus-visible {
+    outline: 3px solid #9fc5ff;
+    outline-offset: 3px;
+}
