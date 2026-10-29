@@ -159,3 +159,20 @@ STOMP 연결을 실제 HTTPS 주소에서 확인하세요.
 `python3 scripts/test-nginx-docker.py ove-font:issue-59-test`로 재현할 수 있습니다.
 이 스크립트는 전용 네트워크·가짜 백엔드·임시 프런트 컨테이너를 만들고 종료 시 정리합니다.
 AWS나 실제 가입 계정은 사용하지 않습니다. Docker와 Python 3가 필요합니다.
+
+#### CloudFront 앞단 배포 체크리스트
+
+- [ ] EC2 origin의 nginx 수신 포트(현재 80) 인바운드를 AWS 관리형
+  `com.amazonaws.global.cloudfront.origin-facing` prefix list로 제한합니다.
+  같은 포트에 `0.0.0.0/0` 또는 `::/0` 허용 규칙이 남지 않았는지 함께 확인합니다.
+- [ ] 배포할 리전의 prefix list ID와 보안그룹 규칙 할당량을 확인합니다.
+- [ ] CloudFront 경유 요청은 성공하고 인터넷에서 EC2 origin으로 직접 접근하면
+  차단되는지 확인합니다. 전달 프로토콜 헤더는 이 신뢰 경계가 적용된 뒤 사용합니다.
+- [ ] prefix list는 CloudFront 전체 대역을 허용하므로 특정 배포만 허용하는 인증은
+  아닙니다. 필요하면 별도 origin 접근 정책을 추가하고 백엔드 인증·Origin 검사는 유지합니다.
+- [ ] `/api`·`/ws` 모두 같은 `X-Real-IP`, `X-Forwarded-For` 전달 정책을 사용합니다.
+  이 값은 nginx가 직접 받은 peer IP이며, CloudFront 뒤에서는 CloudFront 노드일 수 있습니다.
+
+이 PR은 체크리스트와 nginx 설정만 바꾸며 AWS 보안그룹을 직접 변경하지 않습니다.
+참고: [AWS 관리형 prefix list](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-aws-managed-prefix-lists.html),
+[CloudFront origin 접근 제한 안내](https://aws.amazon.com/blogs/networking-and-content-delivery/limit-access-to-your-origins-using-the-aws-managed-prefix-list-for-amazon-cloudfront/).
