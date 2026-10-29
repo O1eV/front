@@ -233,7 +233,7 @@ export function MarketCatalog() {
                 </>
             )}
             <p className="ranking-disclaimer">
-                코인 3종을 지원합니다. 국내 주식은 아래 키움 데모 화면에서 확인할 수 있어요. 해외
+                코인 3종을 지원합니다. 국내 주식은 위 키움 데모 화면에서 확인할 수 있어요. 해외
                 주식은 아직 제공하지 않습니다. AI 신호와 확신도는 로그인 후 확인할 수 있어요.
             </p>
         </section>

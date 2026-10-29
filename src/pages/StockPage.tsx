@@ -17,24 +17,28 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
     const code = (embedded ? undefined : params.get('symbol')) ?? demoStocks[0].symbol;
     const stock = demoStocks.find(item => item.symbol === code);
     return (
-        <section className="panel chart-panel crypto-panel">
+        <section
+            className={`panel chart-panel crypto-panel stock-panel${embedded ? ' stock-panel-embedded' : ''}`}
+        >
             <div className="section-heading">
                 <div>
                     {embedded ? <h2>국내 주식 시세</h2> : <h1>국내 주식 시세</h1>}
                     <p>키움 데모 · 1분봉 · 10초마다 갱신</p>
                 </div>
             </div>
-            <div className="periods" aria-label="주식 선택">
-                {demoStocks.map(item => (
-                    <Link
-                        key={item.symbol}
-                        to={`/stocks?symbol=${item.symbol}`}
-                        aria-current={item.symbol === code ? 'page' : undefined}
-                    >
-                        {item.koreanName}
-                    </Link>
-                ))}
-            </div>
+            {!embedded && (
+                <div className="periods" aria-label="주식 선택">
+                    {demoStocks.map(item => (
+                        <Link
+                            key={item.symbol}
+                            to={`/stocks?symbol=${item.symbol}`}
+                            aria-current={item.symbol === code ? 'page' : undefined}
+                        >
+                            {item.koreanName}
+                        </Link>
+                    ))}
+                </div>
+            )}
             {!stock ? (
                 <p role="alert">지원하지 않는 데모 종목이에요. 삼성전자를 선택해주세요.</p>
             ) : !session ? (

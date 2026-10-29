@@ -5,8 +5,8 @@ import { CryptoPage } from './CryptoPage';
 export function MarketPage() {
     return (
         <div className="market-home">
-            <MarketCatalog />
             <StockPage embedded />
+            <MarketCatalog />
             <CryptoPage />
         </div>
     );

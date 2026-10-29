@@ -1826,3 +1826,14 @@ body,
     color: var(--text-muted);
     font-size: 12px;
 }
+
+/* 마켓 진입 시 차트가 먼저 보이도록 주식 카드 상단을 간결하게 구성합니다. */
+.stock-panel-embedded > .section-heading {
+    padding: 0 0 12px;
+}
+.stock-panel-embedded > .chart-header {
+    margin: 0;
+}
+.stock-panel-embedded > .crypto-source {
+    padding: 8px 0;
+}
