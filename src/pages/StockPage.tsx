@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { demoStocks } from '../api/demoStocks';
 import { useAuthSession } from '../lib/auth';
 import { useDemoStock } from '../hooks/useDemoStock';
+import { useDashboardContext } from '../hooks/useDashboardContext';
 import { formatNumber } from '../utils/format';
 
 const LiveCandleChart = lazy(() =>
@@ -60,11 +61,23 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
 function StockWorkspace({ code, name, token }: { code: string; name: string; token: string }) {
     const { price, candles, reload } = useDemoStock(code, token);
     const now = price.data;
+    const dashboard = useDashboardContext();
+    const favorite = dashboard.favoriteSymbols.includes(code);
     return (
         <>
             <div className="chart-header">
                 <div className="stock-heading">
                     <h2>{name}</h2>
+                    <button
+                        type="button"
+                        className={`star-button ${favorite ? 'is-favorite' : ''}`}
+                        aria-label={`${name} 관심 ${favorite ? '해제' : '등록'}`}
+                        aria-pressed={favorite}
+                        disabled={dashboard.watchlistLoading || dashboard.isWatchlistPending(code)}
+                        onClick={() => void dashboard.toggleFavorite(code)}
+                    >
+                        ★
+                    </button>
                     <small className="crypto-symbol">{code} · 키움 데모</small>
                 </div>
                 <div className="price-heading">

@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import { getDemoStockPrice, demoStocks } from '../../api/demoStocks';
+import { useAuthSession } from '../../lib/auth';
 import { Link } from 'react-router-dom';
 import type { useDashboard } from '../../hooks/useDashboard';
 import { formatNumber } from '../../utils/format';
@@ -32,26 +35,34 @@ export function WatchlistPanel({ dashboard }: { dashboard: ReturnType<typeof use
                 const market = dashboard.watchlistMarkets.find(item => item.symbol === symbol);
                 return (
                     <div className="rail-row" key={symbol}>
-                        <Link to={`/crypto?symbol=${encodeURIComponent(symbol)}`}>
+                        <Link
+                            to={`${/^\d{6}$/.test(symbol) ? '/stocks' : '/crypto'}?symbol=${encodeURIComponent(symbol)}`}
+                        >
                             <span className="rail-stock-name">
-                                {market?.koreanName ?? symbol}
+                                {market?.koreanName ??
+                                    demoStocks.find(stock => stock.symbol === symbol)?.koreanName ??
+                                    symbol}
                                 <small>{symbol}</small>
                             </span>
-                            <span className="rail-price">
-                                {market?.price != null
-                                    ? `${formatNumber(market.price)}원`
-                                    : '시세 조회 불가'}
-                                <small>
-                                    {market?.signal
-                                        ? `${{ BUY: '매수', HOLD: '관망', SELL: '매도' }[market.signal]}${market.confidence != null ? ` · 확신도 ${(market.confidence * 100).toFixed(0)}%` : ''}`
-                                        : 'AI 신호 미제공'}
-                                </small>
-                            </span>
+                            {/^\d{6}$/.test(symbol) ? (
+                                <StockWatchPrice symbol={symbol} />
+                            ) : (
+                                <span className="rail-price">
+                                    {market?.price != null
+                                        ? `${formatNumber(market.price)}원`
+                                        : '시세 조회 불가'}
+                                    <small>
+                                        {market?.signal
+                                            ? `${{ BUY: '매수', HOLD: '관망', SELL: '매도' }[market.signal]}${market.confidence != null ? ` · 확신도 ${(market.confidence * 100).toFixed(0)}%` : ''}`
+                                            : 'AI 신호 미제공'}
+                                    </small>
+                                </span>
+                            )}
                         </Link>
                         <button
                             className="star-button is-favorite"
                             disabled={dashboard.isWatchlistPending(symbol)}
-                            aria-label={`${market?.koreanName ?? symbol} 관심 해제`}
+                            aria-label={`${market?.koreanName ?? demoStocks.find(stock => stock.symbol === symbol)?.koreanName ?? symbol} 관심 해제`}
                             onClick={() => void dashboard.toggleFavorite(symbol)}
                         >
                             ★
@@ -63,5 +74,50 @@ export function WatchlistPanel({ dashboard }: { dashboard: ReturnType<typeof use
                 종목 찾아보기 ›
             </Link>
         </section>
+    );
+}
+
+function StockWatchPrice({ symbol }: { symbol: string }) {
+    const session = useAuthSession();
+    return session ? (
+        <StockPrice
+            key={`${session.user.userId}:${session.accessToken}:${symbol}`}
+            symbol={symbol}
+            token={session.accessToken}
+        />
+    ) : null;
+}
+function StockPrice({ symbol, token }: { symbol: string; token: string }) {
+    const [result, setResult] = useState<{ price?: number; stale?: boolean; error?: boolean }>({});
+    useEffect(() => {
+        const controller = new AbortController();
+        let timer: ReturnType<typeof setTimeout>;
+        async function load() {
+            try {
+                const price = await getDemoStockPrice(symbol, token, controller.signal);
+                if (!controller.signal.aborted)
+                    setResult({ price: price.price, stale: price.stale });
+            } catch {
+                if (!controller.signal.aborted)
+                    setResult(previous => ({ ...previous, error: true }));
+            } finally {
+                if (!controller.signal.aborted) timer = setTimeout(load, 10_000);
+            }
+        }
+        void load();
+        return () => {
+            controller.abort();
+            clearTimeout(timer);
+        };
+    }, [symbol, token]);
+    return (
+        <span className="rail-price">
+            {result.price != null ? `${formatNumber(result.price)}원` : '시세 수집 대기'}
+            <small>
+                {result.error || result.stale
+                    ? '이전 수신 가격 · 갱신 대기'
+                    : '국내 주식 · 키움 데모'}
+            </small>
+        </span>
     );
 }
