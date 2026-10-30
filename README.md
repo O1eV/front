@@ -114,3 +114,65 @@ Authorization 헤더가 유지되어야 합니다. 수집 전 구간이나 장 �
 `DEV_PROXY_TARGET=http://localhost:8080`으로 로컬 백엔드로 전환할 수 있습니다.
 프록시는 Origin 검사를 우회하지 않습니다. AWS 서버가 로컬 Origin을 거부하면
 서버의 허용 Origin에 `http://localhost:5173`을 추가해야 합니다.
+
+### EC2용 프런트 nginx 이미지 (#59)
+
+```bash
+docker build -t ove-font:local .
+# app과 같은 Docker 네트워크에서 실행합니다.
+docker run --rm --network <compose-network> -p 8081:80 \
+    -e BACKEND_HOST=app -e BACKEND_PORT=8080 ove-font:local
+```
+
+Node 22에서 Vite를 빌드하고 nginx가 정적 파일과 `/api`, `/ws`를 한 출처로
+서빙합니다. 서버에 `.env`나 소스·node_modules를 넣지 않고 빌드 산출물만 복사합니다.
+Docker 빌드는 API `/api`, WebSocket `/ws` 상대 경로를 사용합니다. Vite 환경변수는
+빌드 시점에 정해지며 실행 시에는 `BACKEND_HOST`(기본 app), `BACKEND_PORT`(기본 8080)만
+변경합니다. 백엔드 DNS가 존재하고 앱이 준비된 뒤 프런트를 시작하세요.
+백엔드 컨테이너가 교체되어 IP가 바뀌면 nginx 컨테이너도 재시작하세요.
+
+- `/stocks?symbol=005930` 같은 SPA 직접 접근은 index.html로 fallback합니다.
+- `/api`·`/api/*`는 경로와 쿼리를 유지하며 백엔드의 401/404 등을 그대로 반환합니다.
+- `/ws`·`/ws/*`는 HTTP/1.1 Upgrade/Connection과 75초 읽기 타임아웃을 사용합니다.
+- `/healthz`는 nginx 자체 상태만 확인하며 백엔드 가용성을 의미하지 않습니다.
+- 해시된 `/assets/*`는 장기 캐시, index.html은 재검증합니다. 없는 asset은 404입니다.
+
+백엔드 `docker-compose.prod.yml`의 `FRONT_IMAGE`에 푸시한 이미지 태그를 넣으면
+nginx 서비스가 이 이미지를 사용합니다. 이 PR은 이미지 빌드 구성만 추가하며 AWS/ECR에
+실제 배포하거나 이미지를 업로드하지 않습니다. EC2가 amd64이면 ARM 맥에서
+`docker buildx build --platform linux/amd64 -t <registry>/ove-font:<tag> --push .`처럼
+대상 플랫폼을 명시해 별도로 빌드하세요.
+
+CloudFront는 모든 경로를 같은 nginx origin으로 전달하고, `/api*`와 `/ws*`는 캐시를
+비활성화해야 합니다. 필요한 메서드(GET/POST/DELETE 등), 쿼리, Cookie,
+Authorization, Origin, WebSocket Upgrade 관련 헤더를 전달하세요.
+CloudFront-Forwarded-Proto 또는 X-Forwarded-Proto가 전달되면 nginx는 이를 유지합니다.
+백엔드는 전달 헤더를 처리하고 허용 Origin을 실제 CloudFront 도메인으로 설정해야 합니다.
+이 nginx는 Origin·인증 헤더를 제거하거나 CORS 허용 범위를 변경하지 않습니다.
+EC2 origin 직접 접근을 제한하고, CloudFront 설정 변경 후 로그인·refresh·로그아웃 및
+STOMP 연결을 실제 HTTPS 주소에서 확인하세요.
+
+참고: [nginx WebSocket 프록시](https://nginx.org/en/docs/http/websocket.html),
+[공식 nginx 이미지 템플릿](https://hub.docker.com/_/nginx).
+
+이미지 검증은 `docker build -t ove-font:issue-59-test .` 후
+`python3 scripts/test-nginx-docker.py ove-font:issue-59-test`로 재현할 수 있습니다.
+이 스크립트는 전용 네트워크·가짜 백엔드·임시 프런트 컨테이너를 만들고 종료 시 정리합니다.
+AWS나 실제 가입 계정은 사용하지 않습니다. Docker와 Python 3가 필요합니다.
+
+#### CloudFront 앞단 배포 체크리스트
+
+- [ ] EC2 origin의 nginx 수신 포트(현재 80) 인바운드를 AWS 관리형
+  `com.amazonaws.global.cloudfront.origin-facing` prefix list로 제한합니다.
+  같은 포트에 `0.0.0.0/0` 또는 `::/0` 허용 규칙이 남지 않았는지 함께 확인합니다.
+- [ ] 배포할 리전의 prefix list ID와 보안그룹 규칙 할당량을 확인합니다.
+- [ ] CloudFront 경유 요청은 성공하고 인터넷에서 EC2 origin으로 직접 접근하면
+  차단되는지 확인합니다. 전달 프로토콜 헤더는 이 신뢰 경계가 적용된 뒤 사용합니다.
+- [ ] prefix list는 CloudFront 전체 대역을 허용하므로 특정 배포만 허용하는 인증은
+  아닙니다. 필요하면 별도 origin 접근 정책을 추가하고 백엔드 인증·Origin 검사는 유지합니다.
+- [ ] `/api`·`/ws` 모두 같은 `X-Real-IP`, `X-Forwarded-For` 전달 정책을 사용합니다.
+  이 값은 nginx가 직접 받은 peer IP이며, CloudFront 뒤에서는 CloudFront 노드일 수 있습니다.
+
+이 PR은 체크리스트와 nginx 설정만 바꾸며 AWS 보안그룹을 직접 변경하지 않습니다.
+참고: [AWS 관리형 prefix list](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-aws-managed-prefix-lists.html),
+[CloudFront origin 접근 제한 안내](https://aws.amazon.com/blogs/networking-and-content-delivery/limit-access-to-your-origins-using-the-aws-managed-prefix-list-for-amazon-cloudfront/).
