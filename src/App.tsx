@@ -12,6 +12,8 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { pagePaths } from './routes/paths';
 
 import { AuthPage } from './pages/AuthPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { TermsPage } from './pages/TermsPage';
 import './App.css';
 
 export default function App() {
@@ -27,6 +29,8 @@ export default function App() {
         <Routes>
             <Route path="/login" element={<AuthPage key="login" mode="login" />} />
             <Route path="/signup" element={<AuthPage key="signup" mode="signup" />} />
+            <Route path={pagePaths.privacy} element={<PrivacyPolicyPage />} />
+            <Route path={pagePaths.terms} element={<TermsPage />} />
 
             <Route path="/" element={<AppLayout />}>
                 <Route index element={<MarketPage />} />

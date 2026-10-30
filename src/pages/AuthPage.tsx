@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { login } from '../lib/auth';
 import { registerUser } from '../api/auth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { InvestmentNotice } from '../components/legal/InvestmentNotice';
+import { pagePaths } from '../routes/paths';
 import '../styles/auth.css';
 
 type AuthPageProps = { mode: 'login' | 'signup' };
@@ -211,19 +213,51 @@ export function AuthPage({ mode }: AuthPageProps) {
                             <fieldset className="auth-agreements">
                                 <legend>필수 동의</legend>
 
+                                <InvestmentNotice compact />
+
                                 <label>
                                     <input type="checkbox" name="termsAgreed" required />
-                                    서비스 이용약관 동의 (필수)
+                                    <span>
+                                        <Link
+                                            className="agreement-link"
+                                            to={pagePaths.terms}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            서비스 이용약관
+                                        </Link>{' '}
+                                        동의 (필수)
+                                    </span>
                                 </label>
 
                                 <label>
                                     <input type="checkbox" name="privacyAgreed" required />
-                                    개인정보 처리방침 동의 (필수)
+                                    <span>
+                                        <Link
+                                            className="agreement-link"
+                                            to={pagePaths.privacy}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            개인정보 처리방침
+                                        </Link>{' '}
+                                        동의 (필수)
+                                    </span>
                                 </label>
 
                                 <label>
                                     <input type="checkbox" name="investmentNoticeAgreed" required />
-                                    투자 유의사항 동의 (필수)
+                                    <span>
+                                        <Link
+                                            className="agreement-link"
+                                            to={`${pagePaths.terms}#investment-notice`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            투자 유의사항
+                                        </Link>{' '}
+                                        동의 (필수)
+                                    </span>
                                 </label>
                             </fieldset>
                         )}

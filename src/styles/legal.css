@@ -1,0 +1,130 @@
+.legal-page {
+    min-height: 100vh;
+    background: var(--canvas);
+    color: var(--ink);
+}
+
+.legal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--hairline);
+}
+
+.legal-nav {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+}
+
+.legal-nav a {
+    color: var(--text-muted);
+}
+
+.legal-nav a:hover {
+    color: var(--primary);
+}
+
+.legal-main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+}
+
+.legal-document h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+}
+
+.legal-document h2 {
+    margin: 32px 0 8px;
+    font-size: 17px;
+}
+
+.legal-document h3 {
+    margin: 20px 0 6px;
+    font-size: 14px;
+}
+
+.legal-document p,
+.legal-document li {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+}
+
+.legal-document ul,
+.legal-document ol {
+    padding-left: 20px;
+}
+
+.legal-document a {
+    color: var(--primary);
+}
+
+.legal-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.legal-draft {
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background: var(--canvas-soft);
+    font-size: 12px;
+}
+
+.legal-table-wrap {
+    overflow-x: auto;
+}
+
+.legal-document table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.legal-document th,
+.legal-document td {
+    padding: 8px 10px;
+    border: 1px solid var(--hairline);
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.6;
+}
+
+.legal-document th {
+    background: var(--canvas-soft);
+}
+
+.legal-attribution {
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--text-faint);
+}
+
+.investment-notice {
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    background: var(--canvas-soft);
+    color: var(--ink-soft);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.investment-notice ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+}
+
+.investment-notice-compact {
+    padding: 8px 10px;
+    font-size: 11px;
+}
+
+.agreement-link {
+    color: var(--primary);
+    text-decoration: underline;
+}
