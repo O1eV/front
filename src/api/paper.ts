@@ -83,6 +83,7 @@ export interface ServerHolding {
     averagePurchasePrice: number;
     purchaseAmount: number;
     currentPrice: number;
+    priceAvailable: boolean;
     evaluationAmount: number;
     profitLoss: number;
     returnRate: number;
@@ -96,6 +97,7 @@ export interface ServerPortfolio {
     totalProfitLoss: number;
     totalReturnRate: number;
     totalAssetAmount: number;
+    pricesComplete: boolean;
     holdings: ServerHolding[];
 }
 
