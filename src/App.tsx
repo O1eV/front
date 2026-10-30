@@ -29,8 +29,8 @@ export default function App() {
         <Routes>
             <Route path="/login" element={<AuthPage key="login" mode="login" />} />
             <Route path="/signup" element={<AuthPage key="signup" mode="signup" />} />
-            <Route path="/privacy" element={<PrivacyPolicyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
+            <Route path={pagePaths.privacy} element={<PrivacyPolicyPage />} />
+            <Route path={pagePaths.terms} element={<TermsPage />} />
 
             <Route path="/" element={<AppLayout />}>
                 <Route index element={<MarketPage />} />

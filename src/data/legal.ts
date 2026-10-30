@@ -6,7 +6,7 @@ export const legalInfo = {
     lastRevisedDate: '[TODO: 최종 개정일]',
     cpoName: '이경준',
     cpoTitle: '[TODO: 직책]',
-    cpoPhone: '010-8593-7725',
+    cpoPhone: '[TODO: 연락처(전화)]',
     cpoEmail: '[TODO: 연락처(이메일)]',
     mailingAddress: '[TODO: 우편 주소]',
 } as const;

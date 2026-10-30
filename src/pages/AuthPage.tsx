@@ -3,6 +3,7 @@ import { login } from '../lib/auth';
 import { registerUser } from '../api/auth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { InvestmentNotice } from '../components/legal/InvestmentNotice';
+import { pagePaths } from '../routes/paths';
 import '../styles/auth.css';
 
 type AuthPageProps = { mode: 'login' | 'signup' };
@@ -219,7 +220,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                                     <span>
                                         <Link
                                             className="agreement-link"
-                                            to={'/terms'}
+                                            to={pagePaths.terms}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -234,7 +235,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                                     <span>
                                         <Link
                                             className="agreement-link"
-                                            to={'/privacy'}
+                                            to={pagePaths.privacy}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -249,7 +250,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                                     <span>
                                         <Link
                                             className="agreement-link"
-                                            to={'/terms#investment-notice'}
+                                            to={`${pagePaths.terms}#investment-notice`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >

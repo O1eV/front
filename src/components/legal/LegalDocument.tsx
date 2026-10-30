@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, type ReactNode } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { pagePaths } from '../../routes/paths';
 import { legalInfo } from '../../data/legal';
 import '../../styles/legal.css';
 
@@ -10,6 +11,14 @@ type LegalDocumentProps = {
 
 // 개인정보 처리방침·이용약관이 함께 쓰는 공개 페이지 틀 (로그인 없이 볼 수 있다)
 export function LegalDocument({ title, children }: LegalDocumentProps) {
+    const { hash } = useLocation();
+
+    // 라우터는 #앵커로 자동 스크롤하지 않아서, 해시가 가리키는 요소로 직접 이동한다
+    useEffect(() => {
+        if (!hash) return;
+        document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView();
+    }, [hash]);
+
     return (
         <div className="legal-page">
             <header className="legal-header">
@@ -19,8 +28,8 @@ export function LegalDocument({ title, children }: LegalDocumentProps) {
                 </Link>
 
                 <nav className="legal-nav" aria-label="법률 문서">
-                    <Link to={'/terms'}>이용약관</Link>
-                    <Link to={'/privacy'}>개인정보 처리방침</Link>
+                    <Link to={pagePaths.terms}>이용약관</Link>
+                    <Link to={pagePaths.privacy}>개인정보 처리방침</Link>
                 </nav>
             </header>
 
