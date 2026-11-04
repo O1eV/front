@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ApiError } from '../api/apiClient';
-import { getDemoStockCandles, getDemoStockPrice } from '../api/demoStocks';
+import { getDemoStockAnalysis, getDemoStockCandles, getDemoStockPrice } from '../api/demoStocks';
 
 interface Resource<T> {
     data?: T;
@@ -10,6 +10,7 @@ interface Resource<T> {
 interface Snapshot {
     price: Resource<Awaited<ReturnType<typeof getDemoStockPrice>>>;
     candles: Resource<Awaited<ReturnType<typeof getDemoStockCandles>>>;
+    analysis: Resource<Awaited<ReturnType<typeof getDemoStockAnalysis>>>;
 }
 function describeError(error: unknown) {
     if (error instanceof ApiError) {
@@ -25,16 +26,18 @@ function describeError(error: unknown) {
 
 export function useDemoStock(code: string, token: string) {
     const [retry, setRetry] = useState(0);
-    const [snapshot, setSnapshot] = useState<Snapshot>({ price: {}, candles: {} });
+    const [snapshot, setSnapshot] = useState<Snapshot>({ price: {}, candles: {}, analysis: {} });
     useEffect(() => {
         const controller = new AbortController();
         let timer: ReturnType<typeof setTimeout>;
         async function load() {
             const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(12_000)]);
             // 현재가 캐시가 만료되어도 저장된 분봉은 독립적으로 표시합니다.
-            const [price, candles] = await Promise.allSettled([
+            // AI 분석은 보조 정보라 실패해도 시세·차트와 에러 표시에 영향을 주지 않는다.
+            const [price, candles, analysis] = await Promise.allSettled([
                 getDemoStockPrice(code, token, signal),
                 getDemoStockCandles(code, token, signal),
+                getDemoStockAnalysis(code, token, signal),
             ]);
             if (controller.signal.aborted) return;
             setSnapshot(previous => ({
@@ -46,6 +49,10 @@ export function useDemoStock(code: string, token: string) {
                     candles.status === 'fulfilled'
                         ? { data: candles.value, updatedAt: Date.now() }
                         : { ...previous.candles, error: describeError(candles.reason) },
+                analysis:
+                    analysis.status === 'fulfilled'
+                        ? { data: analysis.value, updatedAt: Date.now() }
+                        : previous.analysis,
             }));
             timer = setTimeout(load, 10_000);
         }

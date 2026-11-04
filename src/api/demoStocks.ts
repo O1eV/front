@@ -1,5 +1,6 @@
 import { apiClient } from './apiClient';
 import { mapCandles, type CollectedPrice } from './coinChart';
+import { validateSignal, type LatestSignal } from './signals';
 
 export const demoStocks = [
     {
@@ -64,4 +65,14 @@ export async function getDemoStockCandles(code: string, token: string, signal: A
     if (data.symbol !== code || data.interval !== '1m')
         throw new Error('요청한 종목의 1분봉 응답이 아니에요.');
     return mapCandles(data.candles);
+}
+
+// 최신 AI 신호. 아직 신호가 없으면 서버가 200에 data null을 주므로 null을 그대로 돌려준다.
+export async function getDemoStockAnalysis(code: string, token: string, signal: AbortSignal) {
+    requireStock(code);
+    const data = await apiClient<LatestSignal | null>(`demo/stocks/${code}/analysis`, {
+        token,
+        signal,
+    });
+    return data ? validateSignal(data, code) : null;
 }

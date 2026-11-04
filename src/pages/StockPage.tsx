@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { demoStocks, isKrStockCode } from '../api/demoStocks';
+import type { LatestSignal } from '../api/signals';
 import { useAuthSession } from '../lib/auth';
 import { useDemoStock } from '../hooks/useDemoStock';
 import { useDashboardContext } from '../hooks/useDashboardContext';
@@ -71,7 +72,7 @@ export function StockPage({ embedded = false }: { embedded?: boolean }) {
 }
 
 function StockWorkspace({ code, name, token }: { code: string; name: string; token: string }) {
-    const { price, candles, reload } = useDemoStock(code, token);
+    const { price, candles, analysis, reload } = useDemoStock(code, token);
     const now = price.data;
     const dashboard = useDashboardContext();
     const favorite = dashboard.favoriteSymbols.includes(code);
@@ -143,29 +144,7 @@ function StockWorkspace({ code, name, token }: { code: string; name: string; tok
                 <aside className="panel chart-ai-panel" aria-label="국내 주식 AI 판단">
                     <span className="chart-ai-eyebrow">AI INSIGHT</span>
                     <h2>AI 판단</h2>
-                    <span className="chart-ai-status">분석 준비 중</span>
-                    <p>
-                        국내 주식 AI 분석은 아직 제공되지 않아요. 분석이 연결되면 매수·관망·매도
-                        확률과 확신도를 보여드릴게요.
-                    </p>
-                    <dl className="chart-ai-placeholder">
-                        <div>
-                            <dt>매수</dt>
-                            <dd>—</dd>
-                        </div>
-                        <div>
-                            <dt>관망</dt>
-                            <dd>—</dd>
-                        </div>
-                        <div>
-                            <dt>매도</dt>
-                            <dd>—</dd>
-                        </div>
-                        <div>
-                            <dt>확신도</dt>
-                            <dd>—</dd>
-                        </div>
-                    </dl>
+                    {analysis.data ? <StockAnalysis signal={analysis.data} /> : <AnalysisPending />}
                 </aside>
             </div>
             {candles.updatedAt && (
@@ -184,5 +163,69 @@ function StockWorkspace({ code, name, token }: { code: string; name: string; tok
                 있어요.
             </p>
         </>
+    );
+}
+
+const signalLabels = { BUY: '매수', HOLD: '관망', SELL: '매도' };
+
+// 신호가 아직 없거나 조회에 실패했을 때 보여 주는 기존 안내
+function AnalysisPending() {
+    return (
+        <>
+            <span className="chart-ai-status">분석 준비 중</span>
+            <p>
+                국내 주식 AI 분석은 아직 제공되지 않아요. 분석이 연결되면 매수·관망·매도 확률과
+                확신도를 보여드릴게요.
+            </p>
+            <dl className="chart-ai-placeholder">
+                <div>
+                    <dt>매수</dt>
+                    <dd>—</dd>
+                </div>
+                <div>
+                    <dt>관망</dt>
+                    <dd>—</dd>
+                </div>
+                <div>
+                    <dt>매도</dt>
+                    <dd>—</dd>
+                </div>
+                <div>
+                    <dt>확신도</dt>
+                    <dd>—</dd>
+                </div>
+            </dl>
+        </>
+    );
+}
+
+function StockAnalysis({ signal }: { signal: LatestSignal }) {
+    const rows = [
+        ['buy', '매수', signal.buyProbability],
+        ['hold', '관망', signal.holdProbability],
+        ['sell', '매도', signal.sellProbability],
+    ] as const;
+    return (
+        <div aria-live="polite">
+            <span className="chart-ai-status">
+                {signalLabels[signal.signal]} · 확신도 {(signal.confidence * 100).toFixed(0)}%
+            </span>
+            {signal.stale && <span className="signal-stale">지연됨 · 마지막 수신 신호</span>}
+            <div className="probabilities">
+                {rows.map(([field, label, value]) => (
+                    <div className="probability" key={field}>
+                        <div className="probability-label">
+                            <span>{label}</span>
+                            <strong>{(value * 100).toFixed(1)}%</strong>
+                        </div>
+                        <div className="bar-track">
+                            <div className={field} style={{ width: `${value * 100}%` }} />
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <p>산출 시각: {new Date(signal.generatedAt).toLocaleString('ko-KR')}</p>
+            <p className="my-info-note">AI 신호는 투자 결과를 보장하지 않습니다.</p>
+        </div>
     );
 }

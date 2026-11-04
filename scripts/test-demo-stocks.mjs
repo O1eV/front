@@ -11,13 +11,17 @@ const client = compile(
 const candles = compile(
     fs.readFileSync('src/api/coinChart.ts', 'utf8').replace(/^import .*;\n/gm, '')
 );
+const signals = compile(
+    fs.readFileSync('src/api/signals.ts', 'utf8').replace("'./apiClient'", JSON.stringify(client))
+);
 const api = compile(
     fs
         .readFileSync('src/api/demoStocks.ts', 'utf8')
         .replace("'./apiClient'", JSON.stringify(client))
         .replace("'./coinChart'", JSON.stringify(candles))
+        .replace("'./signals'", JSON.stringify(signals))
 );
-const { getDemoStockPrice, getDemoStockCandles } = await import(api);
+const { getDemoStockPrice, getDemoStockCandles, getDemoStockAnalysis } = await import(api);
 const price = {
     symbol: '005930',
     price: 70000,
@@ -33,12 +37,37 @@ const bar = {
     close: 70000,
     volume: 100,
 };
+const analysis = {
+    signalId: 1,
+    symbol: '005930',
+    previousSignal: 'HOLD',
+    signal: 'BUY',
+    buyProbability: 0.7,
+    holdProbability: 0.2,
+    sellProbability: 0.1,
+    confidence: 0.42,
+    price: null,
+    generatedAt: '2026-10-29T00:01:00Z',
+    stale: false,
+    modelVersion: null,
+};
 let request,
     mode = 'ok';
 globalThis.fetch = async (url, options) => {
     request = { url, options };
     if (mode === 'unavailable' && url.endsWith('/price'))
         return new Response(JSON.stringify({ error: 'COLLECTOR_UNAVAILABLE' }), { status: 503 });
+    if (url.endsWith('/analysis'))
+        return new Response(
+            JSON.stringify({
+                data:
+                    mode === 'noAnalysis'
+                        ? null
+                        : mode === 'invalid'
+                          ? { ...analysis, symbol: 'KRW-BTC' }
+                          : analysis,
+            })
+        );
     return new Response(
         JSON.stringify({
             data: url.endsWith('/price')
@@ -67,6 +96,14 @@ for (const code of ['12345', '0059300', '00593a', '../005930', ' 005930']) {
     assert.equal(request, previous);
 }
 
+assert.equal((await getDemoStockAnalysis('005930', 'fake-token', signal)).signal, 'BUY');
+assert.equal(request.url, '/api/demo/stocks/005930/analysis');
+assert.equal(request.options.headers.Authorization, 'Bearer fake-token');
+mode = 'noAnalysis';
+assert.equal(await getDemoStockAnalysis('005930', 'fake-token', signal), null);
+mode = 'invalid';
+await assert.rejects(getDemoStockAnalysis('005930', 'fake-token', signal));
+await assert.rejects(getDemoStockAnalysis('KRW-BTC', 'fake-token', signal));
 mode = 'rate';
 assert.equal((await getDemoStockPrice('005930', 'fake-token', signal)).changeRate, -0.0125);
 mode = 'invalid';
@@ -130,7 +167,9 @@ const flush = async () => {
 mode = 'ok';
 render();
 await flush();
-assert.equal(render().price.data.price, 70000);
+const first = render();
+assert.equal(first.price.data.price, 70000);
+assert.equal(first.analysis.data.signal, 'BUY');
 assert.equal(timers.length, 1);
 assert.equal(timers[0].ms, 10000);
 mode = 'unavailable';
@@ -140,6 +179,10 @@ const partial = render();
 assert.match(partial.price.error, /수집 대기/);
 assert.equal(partial.price.data.price, 70000);
 assert.equal(partial.candles.data.length, 1);
+mode = 'noAnalysis';
+timers.shift().fn();
+await flush();
+assert.equal(render().analysis.data, null);
 mode = 'empty';
 timers.shift().fn();
 await flush();
